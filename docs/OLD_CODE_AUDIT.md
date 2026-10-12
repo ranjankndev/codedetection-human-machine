@@ -1,0 +1,30 @@
+# Old code audit: what was reused, adapted, replaced, dropped
+
+Source: `Codedetection-Human-Machine-main` (now `legacy/`, untouched). ~10.7k lines in ~25 scripts, many near-duplicates.
+Status legend: **PORTED** = copied with small fixes, **ADAPTED** = same idea, rewritten for correctness, **NEW** = did not exist, **DROPPED**.
+
+| Old location | What it does | Status | New location / reason |
+|---|---|---|---|
+| `taska/gpad_v2_model.py` `GPADConfig`, `EntropyCalculator`, `EntropyWeightedAttention`, `StyleIntegration`, `GPADLayer`, `GPADModel` | CodeBERT + 1 extra block, additive entropy bias, gated style fusion, MLP head | **ADAPTED** | `src/codedet/models/gpad.py`. Fixes: padding-aware entropy, explicit `entropy_sign`, precomputed style input, no `PreTrainedModel` subclass, injectable encoder (tests need no downloads), pluggable loss, parameter-free control (`entropy_alpha=0`). |
+| `taska/gpad_v2_model.py` `StylometricExtractor.extract_features` (16 feats, in `forward()`) | Raw ratios computed per batch on the main process, unscaled, Python-biased (`def `, `class `, `#`) | **ADAPTED** | `features.py::stylometric_features` (16 language-agnostic feats), `style_matrix`, `StyleScaler` (z-score on train stats), computed once and cached. |
+| `taskb/codebert-entropy-stylometry-classifier.py` `extract_stylometric_features` (radon, 20-d) | LOC, cyclomatic, Halstead via `radon` | **PORTED (legacy ablation only)** | `features.py::radon_features`. WARNING: radon parses only Python; for C++/Java it returns zeros, so it works as a language detector. |
+| `taskb/codebert-ent-sty-gpu2-classifier.py` `token_entropy`, `EntropyWeightedSelfAttention`, `CodeBERTAuthorshipClassifier` | Entropy of softmax over the 768 hidden dims; added as attention bias; mean-pool; label smoothing | **REPLACED** | Different (third) entropy definition. Replaced by `AttnEntropy` (documented) and true predictive entropy in `lm_features.py`. Keep as a named ablation only if time allows. |
+| `taskb/*` `normalize_family`, `human_label`, id→family map, `mark_seen` | Generator → 10 families, seen/unseen marking | **PORTED** | `labels.py` (`normalize_family`, `FAMILIES`, `mark_seen`, `add_family`). Official `label_to_id.json` is the source of truth. |
+| `taskb/*` `load_split`, `sample_balanced`, `sample_per_label`, `sample_for_balanced_size`, `summarize_split` | Parquet loading and subsampling | **PORTED + extended** | `data.py` (`load_split`, `sample_balanced`, `sample_per_label`, `summarize_split`) plus new `stratified_subsample`, `cap_human_share`. `sample_for_balanced_size` dropped: it forced human count = target − machine count and fails when machine rows exceed the target. |
+| `taska/gpad_v2_trainer.py` `GPADDataset`, `GPADDataCollator` | Pad every sample to 512, keep raw text for style | **ADAPTED** | `datasets.py`: pre-tokenise with head+tail truncation, dynamic padding, precomputed style arrays. |
+| `taska/gpad_v2_trainer.py` `MemoryEfficientTrainer`, Accelerator monkey-patch, `TrainingArguments(evaluation_strategy=...)` | HF Trainer workarounds | **REPLACED** | `trainloop.py::fit` (explicit AMP loop, early stopping, best-state restore) and `run_with_oom_ladder`. The `evaluation_strategy` kwarg no longer exists in recent transformers; the patches were version-fragile. The cache-clearing idea survives in the OOM ladder. |
+| `taska/gpad_v2_trainer.py` `_prepare_labels` (Task A from `generator`, Task B family) | Label construction | **ADAPTED** | `labels.py::binary_labels`, `add_family`. |
+| `taska/evaluation_metrics.py` `compute_extended_metrics`, `save_metrics_artifacts` | Macro P/R/F1 + JSON | **ADAPTED** | `eval.py::metrics_dict` (+ balanced accuracy, per-class, confusion matrix), `utils.write_json`. |
+| `taska/inference.py` `predict_batch`, `evaluate`; `taska/model_loader.py` | Batched inference, loading GPAD / baseline | **ADAPTED** | `inference.py::predict_texts`, `trainloop.predict_logits`, `GPADClassifier.save/load`. |
+| imports of `utils` (`get_logger`, `set_seed`, `compute_metrics_macro`, `print_classification_report`) | Module absent from the zip: main training path could not run | **NEW (fix)** | `utils.py`. |
+| `taska/gpad_main.py`, `gpad_trainer.py`, `gpad_model.py` (v1), `CodeBERTTrainer.py`, `run_codebert_baseline.py`, `inference_base.py`, `setup.sh` | v1 and baseline variants, vast.ai setup | **DROPPED** (kept in `legacy/`) | Superseded by one trainer; `setup.sh` is vast.ai-specific. |
+| `taskb/codebert-*-classifier-*.py`, `*-cpu`, `*-gpu2`, `*-eq-balanced`, `codet5-classifier-gpad.py`, `class-balance-dataset.py` | ~10 near-duplicate Task B scripts | **DROPPED** (kept in `legacy/`) | Replaced by `scripts/train.py --task B --model ...` with config flags. |
+| `taskb/stylo-features/*.npy` (7 MB), `New Text Document.txt` | Cached features, scratch notes | **DROPPED** | Features are regenerated and cached at run time; notes superseded by `legacy/OLD_README_kaggle_commands.md`. |
+| `README.md` Kaggle command scratch notes (e.g. `train_lr.py`, `create_datasubset.py`, `predict.py`) | Commands for scripts that are not in the zip | **ARCHIVED** | `legacy/OLD_README_kaggle_commands.md`. Contains placeholder `<your_token>` and a hard-coded HF namespace: do not reuse. |
+| (none) | Loss options for imbalance, bootstrap CIs, paired tests, McNemar, ECE, temperature scaling, OOD split builders, dedup, LM likelihood features, OOM ladder, fixtures + tests | **NEW** | `losses.py`, `eval.py`, `data.py`, `lm_features.py`, `trainloop.py`, `fixtures.py`, `tests/`. |
+
+## Test status of the provided code
+`pytest -q`: 17 tests, CPU only, no downloads (tiny random RoBERTa + char-level fake tokenizer). Covers label normalisation, splits/dedup/head-tail,
+stylometry + scaler, macro-F1 vs sklearn, bootstrap/paired/McNemar, ECE + temperature scaling, LM stats with padding, GPAD shapes, padding invariance,
+ablation flags, an end-to-end tiny training run, and the OOM ladder.
+NOT yet exercised: real CodeBERT / Qwen downloads, GPU fp16 path, `lm_features()` on a real LM, `AutoModel.from_config` reload path (`GPADClassifier.load`). Verify these in the Kaggle smoke run.

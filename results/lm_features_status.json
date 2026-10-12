@@ -1,0 +1,55 @@
+{
+  "model": "sshleifer/tiny-gpt2",
+  "feature_names": [
+    "nll_mean",
+    "nll_std",
+    "nll_max",
+    "nll_p90",
+    "ent_mean",
+    "ent_std",
+    "top1_hit",
+    "nll_over_ent"
+  ],
+  "dim": 8,
+  "splits": {
+    "A:train": {
+      "n": 115,
+      "seconds": 1.7,
+      "nll_mean": 10.825084686279297,
+      "ent_mean": 10.824569702148438
+    },
+    "A:id_val": {
+      "n": 40,
+      "seconds": 0.7,
+      "nll_mean": 10.823469161987305,
+      "ent_mean": 10.824572563171387
+    },
+    "A:ood_lang": {
+      "n": 40,
+      "seconds": 0.6,
+      "nll_mean": 10.822720527648926,
+      "ent_mean": 10.824579238891602
+    },
+    "B:train": {
+      "n": 101,
+      "seconds": 1.7,
+      "nll_mean": 10.824520111083984,
+      "ent_mean": 10.824570655822754
+    },
+    "B:id_val": {
+      "n": 40,
+      "seconds": 0.6,
+      "nll_mean": 10.823362350463867,
+      "ent_mean": 10.824572563171387
+    },
+    "B:ood_gen": {
+      "n": 40,
+      "seconds": 0.5,
+      "nll_mean": 10.82374095916748,
+      "ent_mean": 10.82457447052002
+    }
+  },
+  "load_seconds": 3.9,
+  "device": "cpu",
+  "status": "ok"
+}

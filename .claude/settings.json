@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python:*)", "Bash(python3:*)", "Bash(pip:*)", "Bash(pytest:*)",
+      "Bash(kaggle:*)", "Bash(git status:*)", "Bash(git diff:*)", "Bash(git add:*)", "Bash(git commit:*)",
+      "Bash(git log:*)", "Bash(git tag:*)", "Bash(git push:*)", "Bash(gh auth status:*)",
+      "Bash(ls:*)", "Bash(cat:*)", "Bash(head:*)", "Bash(tail:*)", "Bash(mkdir:*)", "Bash(cp:*)", "Bash(mv:*)",
+      "Bash(sleep:*)", "Bash(wc:*)", "Bash(grep:*)", "Bash(find:*)",
+      "Read", "Edit", "Write"
+    ],
+    "deny": [
+      "Read(~/.kaggle/**)", "Read(**/kaggle.json)", "Read(**/.env)",
+      "Bash(rm -rf:*)", "Bash(git push --force:*)", "Bash(git push -f:*)", "Bash(git reset --hard:*)",
+      "Bash(sudo:*)", "Bash(cat ~/.kaggle:*)"
+    ]
+  }
+}

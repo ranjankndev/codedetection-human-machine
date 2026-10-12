@@ -1,0 +1,179 @@
+{
+  "preset": "local_cpu",
+  "config": "C:\\dev\\CodeDetection-Human-Machine\\configs\\local_cpu.yaml",
+  "data_root": "fixtures",
+  "budget_minutes": 20.0,
+  "started": "2026-10-13T01:22:23",
+  "python": "3.14.0",
+  "stages": [
+    {
+      "stage": "discover",
+      "required": false,
+      "status": "ok",
+      "seconds": 1.8,
+      "returncode": 0,
+      "error": null,
+      "log": "results\\logs\\discover.log"
+    },
+    {
+      "stage": "splits",
+      "required": true,
+      "status": "ok",
+      "seconds": 10.0,
+      "returncode": 0,
+      "error": null,
+      "log": "results\\logs\\splits.log"
+    },
+    {
+      "stage": "lm_features",
+      "required": false,
+      "status": "ok",
+      "seconds": 35.9,
+      "returncode": 0,
+      "error": null,
+      "log": "results\\logs\\lm_features.log"
+    },
+    {
+      "stage": "classical",
+      "required": true,
+      "status": "ok",
+      "seconds": 11.8,
+      "returncode": 0,
+      "error": null,
+      "log": "results\\logs\\classical.log"
+    },
+    {
+      "stage": "train_A_codebert",
+      "required": true,
+      "status": "ok",
+      "seconds": 43.8,
+      "returncode": 0,
+      "error": null,
+      "log": "results\\logs\\train_A_codebert.log"
+    },
+    {
+      "stage": "train_A_gpad",
+      "required": true,
+      "status": "ok",
+      "seconds": 48.6,
+      "returncode": 0,
+      "error": null,
+      "log": "results\\logs\\train_A_gpad.log"
+    },
+    {
+      "stage": "train_A_control",
+      "required": true,
+      "status": "ok",
+      "seconds": 66.2,
+      "returncode": 0,
+      "error": null,
+      "log": "results\\logs\\train_A_control.log"
+    },
+    {
+      "stage": "train_A_gpad_sign_neg",
+      "required": true,
+      "status": "ok",
+      "seconds": 53.9,
+      "returncode": 0,
+      "error": null,
+      "log": "results\\logs\\train_A_gpad_sign_neg.log"
+    },
+    {
+      "stage": "train_A_lora",
+      "required": false,
+      "status": "ok",
+      "seconds": 41.0,
+      "returncode": 0,
+      "error": null,
+      "log": "results\\logs\\train_A_lora.log"
+    },
+    {
+      "stage": "train_B_codebert_weighted",
+      "required": true,
+      "status": "ok",
+      "seconds": 44.7,
+      "returncode": 0,
+      "error": null,
+      "log": "results\\logs\\train_B_codebert_weighted.log"
+    },
+    {
+      "stage": "train_B_gpad_entropy_only",
+      "required": true,
+      "status": "ok",
+      "seconds": 49.6,
+      "returncode": 0,
+      "error": null,
+      "log": "results\\logs\\train_B_gpad_entropy_only.log"
+    },
+    {
+      "stage": "train_B_gpad_style_only",
+      "required": true,
+      "status": "ok",
+      "seconds": 50.3,
+      "returncode": 0,
+      "error": null,
+      "log": "results\\logs\\train_B_gpad_style_only.log"
+    },
+    {
+      "stage": "train_B_gpad_both",
+      "required": true,
+      "status": "ok",
+      "seconds": 47.6,
+      "returncode": 0,
+      "error": null,
+      "log": "results\\logs\\train_B_gpad_both.log"
+    },
+    {
+      "stage": "stack",
+      "required": false,
+      "status": "ok",
+      "seconds": 17.8,
+      "returncode": 0,
+      "error": null,
+      "log": "results\\logs\\stack.log"
+    },
+    {
+      "stage": "evaluate",
+      "required": true,
+      "status": "ok",
+      "seconds": 7.6,
+      "returncode": 0,
+      "error": null,
+      "log": "results\\logs\\evaluate.log"
+    },
+    {
+      "stage": "analyze",
+      "required": true,
+      "status": "ok",
+      "seconds": 14.5,
+      "returncode": 0,
+      "error": null,
+      "log": "results\\logs\\analyze.log"
+    },
+    {
+      "stage": "bench",
+      "required": false,
+      "status": "ok",
+      "seconds": 58.5,
+      "returncode": 0,
+      "error": null,
+      "log": "results\\logs\\bench.log"
+    },
+    {
+      "stage": "report",
+      "required": true,
+      "status": "ok",
+      "seconds": 0.6,
+      "returncode": 0,
+      "error": null,
+      "log": "results\\logs\\report.log"
+    }
+  ],
+  "torch": "2.10.0+cpu",
+  "cuda": false,
+  "elapsed_minutes": 10.07,
+  "failed_required": [],
+  "status": "ok",
+  "degraded_stages": [],
+  "skipped_or_failed": []
+}

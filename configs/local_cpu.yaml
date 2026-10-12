@@ -1,0 +1,34 @@
+preset: local_cpu          # laptop dry run on synthetic fixtures: proves the plumbing, not the science
+seed: 42
+budget_minutes: 20
+data:
+  root: fixtures/
+  task_a: {n_train: 160, n_val: 40, n_ood: 40, holdout_language: Java, stratify_by: [label, language]}
+  task_b: {n_train: 160, n_val: 40, n_ood: 40, human_cap: 0.5, n_unseen_families: 1}
+text: {max_len: 64, head_tokens: 48}
+model:
+  # a 2-layer random RoBERTa: same code path as CodeBERT, ~1000x cheaper. The real presets use codebert-base.
+  base: hf-internal-testing/tiny-random-RobertaModel
+  entropy_alpha: 0.15
+  style_dim: 32
+  classifier_hidden: 64
+train:
+  epochs: 1
+  batch_size: 8
+  lr: 3.0e-5
+  head_lr: 2.0e-4
+  grad_accum: 1
+  fp16: false
+  patience: 1
+  loss_task_a: ce
+  loss_task_b: weighted_ce
+eval: {batch_size: 32}
+lm: {model: "sshleifer/tiny-gpt2", max_len: 64, batch_size: 8, n_rows: 400}
+lora: {r: 8, alpha: 16}
+bootstrap: {n_boot: 100}
+seeds: {cheap_models: 2, transformers: 1}
+bench: {batch_sizes: [1, 8], repeats: 5, warmup: 2}
+models:
+  task_a: [majority, length_only, tfidf_lr, style_gbdt, lm_gbdt, codebert, gpad, control, gpad_sign_neg, lora, stack]
+  task_b: [majority, tfidf_lr, codebert_weighted, gpad_entropy_only, gpad_style_only, gpad_both, stack]
+optional_stages: [lm, lora, stack, bench, demo]

@@ -1,0 +1,49 @@
+# Core ML/DL frameworks
+torch>=1.12.0
+transformers>=4.20.0
+datasets>=2.0.0
+
+# Scientific computing
+numpy>=1.21.0
+pandas>=1.3.0
+scikit-learn>=1.0.0
+scipy>=1.7.0
+
+# Visualization
+matplotlib>=3.5.0
+seaborn>=0.11.0
+plotly>=5.0.0
+
+# Progress bars and utilities
+tqdm>=4.62.0
+rich>=12.0.0
+
+# Experiment tracking (optional)
+wandb>=0.12.0
+tensorboard>=2.8.0
+
+# Code analysis and stylometry
+ast-decompiler>=0.7.0
+tokenize-rt>=4.2.0
+
+# Configuration and file handling
+pyyaml>=6.0
+jsonlines>=3.0.0
+openpyxl>=3.0.0
+
+# Performance monitoring
+psutil>=5.8.0
+py-cpuinfo>=8.0.0
+GPUtil>=1.4.0
+
+# Development and testing
+pytest>=7.0.0
+pytest-cov>=3.0.0
+black>=22.0.0
+flake8>=4.0.0
+mypy>=0.950
+
+# Optional: Advanced features
+# faiss-cpu>=1.7.0  # For similarity search
+# accelerate>=0.18.0  # For distributed training
+# deepspeed>=0.8.0  # For large model training

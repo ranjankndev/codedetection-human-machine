@@ -1,0 +1,127 @@
+{
+  "root": "fixtures",
+  "files": {
+    "fixtures\\task_a.parquet": {
+      "rows": 600,
+      "columns": [
+        "code",
+        "label",
+        "language",
+        "generator",
+        "domain"
+      ]
+    },
+    "fixtures\\task_b.parquet": {
+      "rows": 600,
+      "columns": [
+        "code",
+        "label",
+        "language",
+        "generator",
+        "domain"
+      ]
+    }
+  },
+  "tasks": {
+    "A": {
+      "candidates": [
+        "fixtures\\task_a.parquet"
+      ],
+      "label_map": null,
+      "columns": [
+        "code",
+        "label",
+        "language",
+        "generator",
+        "domain"
+      ],
+      "summary": {
+        "name": "task_a.parquet",
+        "rows": 600,
+        "label_counts": {
+          "1": 302,
+          "0": 298
+        },
+        "language_counts": {
+          "Python": 200,
+          "Java": 200,
+          "C++": 200
+        },
+        "generator_counts": {
+          "Human": 298,
+          "bigcode/starcoder2-3b": 30,
+          "deepseek-ai/deepseek-coder-1.3b": 29,
+          "mistralai/Codestral-22B": 28,
+          "Qwen/Qwen2.5-Coder-1.5B": 27,
+          "mistralai/Mistral-7B": 27,
+          "gpt-4.1-mini": 26,
+          "meta-llama/CodeLlama-13b": 25,
+          "deepseek-ai/deepseek-coder-6.7b": 24,
+          "bigcode/starcoder2-7b": 24,
+          "meta-llama/CodeLlama-7b": 21,
+          "Qwen/Qwen2.5-Coder-7B": 21,
+          "gpt-4o-mini": 20
+        },
+        "domain_counts": {
+          "algorithmic": 600
+        }
+      },
+      "code_chars": {
+        "mean": 203.21,
+        "p50": 222.5,
+        "p95": 347.0,
+        "max": 348
+      }
+    },
+    "B": {
+      "candidates": [
+        "fixtures\\task_b.parquet"
+      ],
+      "label_map": null,
+      "columns": [
+        "code",
+        "label",
+        "language",
+        "generator",
+        "domain"
+      ],
+      "summary": {
+        "name": "task_b.parquet",
+        "rows": 600,
+        "label_counts": {
+          "1": 309,
+          "0": 291
+        },
+        "language_counts": {
+          "Python": 200,
+          "Java": 200,
+          "C++": 200
+        },
+        "generator_counts": {
+          "Human": 291,
+          "gpt-4.1-mini": 36,
+          "meta-llama/CodeLlama-13b": 33,
+          "mistralai/Codestral-22B": 29,
+          "Qwen/Qwen2.5-Coder-1.5B": 29,
+          "bigcode/starcoder2-3b": 26,
+          "deepseek-ai/deepseek-coder-6.7b": 26,
+          "bigcode/starcoder2-7b": 24,
+          "meta-llama/CodeLlama-7b": 23,
+          "deepseek-ai/deepseek-coder-1.3b": 22,
+          "gpt-4o-mini": 22,
+          "Qwen/Qwen2.5-Coder-7B": 20,
+          "mistralai/Mistral-7B": 19
+        },
+        "domain_counts": {
+          "algorithmic": 600
+        }
+      },
+      "code_chars": {
+        "mean": 205.28666666666666,
+        "p50": 227.0,
+        "p95": 347.0,
+        "max": 348
+      }
+    }
+  }
+}

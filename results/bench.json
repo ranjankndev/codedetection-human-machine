@@ -1,0 +1,265 @@
+{
+  "preset": "local_cpu",
+  "base_model": "hf-internal-testing/tiny-random-RobertaModel",
+  "seq_len": 64,
+  "models": {
+    "codebert": {
+      "model": "codebert",
+      "params": {
+        "total_M": 0.09,
+        "trainable_M": 0.09
+      },
+      "seq_len": 64,
+      "rows": [
+        {
+          "variant": "fp32",
+          "p50_ms": 20.17390006221831,
+          "p95_ms": 24.445439921692014,
+          "mean_ms": 18.200039956718683,
+          "n": 5,
+          "throughput_per_s": 49.56899741328652,
+          "batch_size": 1,
+          "seq_len": 64,
+          "device": "cpu",
+          "precision": "fp32"
+        },
+        {
+          "variant": "fp32",
+          "p50_ms": 23.538699839264154,
+          "p95_ms": 47.47115997597575,
+          "mean_ms": 31.73596002161503,
+          "n": 5,
+          "throughput_per_s": 339.86584028126543,
+          "batch_size": 8,
+          "seq_len": 64,
+          "device": "cpu",
+          "precision": "fp32"
+        },
+        {
+          "variant": "int8_dynamic",
+          "p50_ms": 67.80620012432337,
+          "p95_ms": 98.8033399451524,
+          "mean_ms": 72.23180001601577,
+          "n": 5,
+          "throughput_per_s": 14.74791388053732,
+          "batch_size": 1,
+          "seq_len": 64,
+          "device": "cpu",
+          "precision": "fp32"
+        },
+        {
+          "variant": "int8_dynamic",
+          "p50_ms": 127.18939990736544,
+          "p95_ms": 189.031479973346,
+          "mean_ms": 129.6674999408424,
+          "n": 5,
+          "throughput_per_s": 62.89832333375705,
+          "batch_size": 8,
+          "seq_len": 64,
+          "device": "cpu",
+          "precision": "fp32"
+        }
+      ],
+      "info": {
+        "model": "codebert",
+        "with_lm_features": false,
+        "params": {
+          "total_M": 0.09,
+          "trainable_M": 0.09
+        }
+      }
+    },
+    "control": {
+      "model": "control",
+      "params": {
+        "total_M": 0.1,
+        "trainable_M": 0.1
+      },
+      "seq_len": 64,
+      "rows": [
+        {
+          "variant": "fp32",
+          "p50_ms": 19.85789998434484,
+          "p95_ms": 26.52540015988052,
+          "mean_ms": 20.555440057069063,
+          "n": 5,
+          "throughput_per_s": 50.35779215266263,
+          "batch_size": 1,
+          "seq_len": 64,
+          "device": "cpu",
+          "precision": "fp32"
+        },
+        {
+          "variant": "fp32",
+          "p50_ms": 28.765000170096755,
+          "p95_ms": 44.65928012505174,
+          "mean_ms": 29.34602010063827,
+          "n": 5,
+          "throughput_per_s": 278.1157640428789,
+          "batch_size": 8,
+          "seq_len": 64,
+          "device": "cpu",
+          "precision": "fp32"
+        },
+        {
+          "variant": "int8_dynamic",
+          "p50_ms": 69.48780012317002,
+          "p95_ms": 105.96747994422913,
+          "mean_ms": 71.05728010646999,
+          "n": 5,
+          "throughput_per_s": 14.391015375756009,
+          "batch_size": 1,
+          "seq_len": 64,
+          "device": "cpu",
+          "precision": "fp32"
+        },
+        {
+          "variant": "int8_dynamic",
+          "p50_ms": 101.32989985868335,
+          "p95_ms": 167.81969997100532,
+          "mean_ms": 115.11033996939659,
+          "n": 5,
+          "throughput_per_s": 78.95004348328534,
+          "batch_size": 8,
+          "seq_len": 64,
+          "device": "cpu",
+          "precision": "fp32"
+        }
+      ],
+      "info": {
+        "model": "control",
+        "with_lm_features": false,
+        "params": {
+          "total_M": 0.1,
+          "trainable_M": 0.1
+        }
+      }
+    },
+    "gpad": {
+      "model": "gpad",
+      "params": {
+        "total_M": 0.1,
+        "trainable_M": 0.1
+      },
+      "seq_len": 64,
+      "rows": [
+        {
+          "variant": "fp32",
+          "p50_ms": 92.93060004711151,
+          "p95_ms": 106.37112008407712,
+          "mean_ms": 74.29177998565137,
+          "n": 5,
+          "throughput_per_s": 10.760718207921247,
+          "batch_size": 1,
+          "seq_len": 64,
+          "device": "cpu",
+          "precision": "fp32"
+        },
+        {
+          "variant": "fp32",
+          "p50_ms": 33.52990001440048,
+          "p95_ms": 55.909880017861724,
+          "mean_ms": 40.24633998051286,
+          "n": 5,
+          "throughput_per_s": 238.59301687640422,
+          "batch_size": 8,
+          "seq_len": 64,
+          "device": "cpu",
+          "precision": "fp32"
+        },
+        {
+          "variant": "int8_dynamic",
+          "p50_ms": 566.4194000419229,
+          "p95_ms": 581.6651999484748,
+          "mean_ms": 457.9952799715102,
+          "n": 5,
+          "throughput_per_s": 1.7654762529778925,
+          "batch_size": 1,
+          "seq_len": 64,
+          "device": "cpu",
+          "precision": "fp32"
+        },
+        {
+          "variant": "int8_dynamic",
+          "p50_ms": 191.39870000071824,
+          "p95_ms": 256.5118200611323,
+          "mean_ms": 184.00735999457538,
+          "n": 5,
+          "throughput_per_s": 41.797567067958035,
+          "batch_size": 8,
+          "seq_len": 64,
+          "device": "cpu",
+          "precision": "fp32"
+        }
+      ],
+      "info": {
+        "model": "gpad",
+        "with_lm_features": false,
+        "params": {
+          "total_M": 0.1,
+          "trainable_M": 0.1
+        }
+      }
+    },
+    "lora": {
+      "model": "lora",
+      "params": {
+        "total_M": 0.09,
+        "trainable_M": 0.01
+      },
+      "seq_len": 64,
+      "rows": [
+        {
+          "variant": "fp32",
+          "p50_ms": 17.16140005737543,
+          "p95_ms": 20.211600000038743,
+          "mean_ms": 17.195819970220327,
+          "n": 5,
+          "throughput_per_s": 58.270304092714824,
+          "batch_size": 1,
+          "seq_len": 64,
+          "device": "cpu",
+          "precision": "fp32"
+        },
+        {
+          "variant": "fp32",
+          "p50_ms": 24.448700016364455,
+          "p95_ms": 67.93660004623233,
+          "mean_ms": 34.37446001917124,
+          "n": 5,
+          "throughput_per_s": 327.2157617642366,
+          "batch_size": 8,
+          "seq_len": 64,
+          "device": "cpu",
+          "precision": "fp32"
+        },
+        {
+          "variant": "int8_dynamic",
+          "error": "'function' object has no attribute 'dtype'"
+        }
+      ],
+      "info": {
+        "model": "lora",
+        "with_lm_features": false,
+        "lora": {
+          "r": 8,
+          "alpha": 16,
+          "target_modules": [
+            "query",
+            "value"
+          ],
+          "backend": "peft",
+          "params": {
+            "total_M": 0.09,
+            "trainable_M": 0.01
+          },
+          "encoder_trainable_M": 0.0051
+        },
+        "params": {
+          "total_M": 0.09,
+          "trainable_M": 0.01
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+preset: lite               # the portfolio run: ~35-50 min target on a Kaggle T4/P100 (verify on first run)
+seed: 42
+budget_minutes: 60
+data:
+  root: /kaggle/input
+  task_a: {n_train: 20000, n_val: 5000, n_ood: 5000, holdout_language: Java, stratify_by: [label, language]}
+  task_b: {n_train: 20000, n_val: 5000, n_ood: 5000, human_cap: 0.4, n_unseen_families: 3}
+text: {max_len: 256, head_tokens: 192}
+model: {base: microsoft/codebert-base, entropy_alpha: 0.15, style_dim: 32, classifier_hidden: 384}
+train:
+  epochs: 2
+  batch_size: 16
+  lr: 2.0e-5
+  head_lr: 1.0e-4
+  grad_accum: 1
+  fp16: true
+  patience: 1
+  loss_task_a: ce
+  loss_task_b: weighted_ce
+eval: {batch_size: 64}
+lm: {model: "Qwen/Qwen2.5-Coder-0.5B", max_len: 256, batch_size: 16, n_rows: 25000}
+lora: {r: 8, alpha: 16}
+bootstrap: {n_boot: 1000}
+seeds: {cheap_models: 3, transformers: 1}   # raise transformers to 2 only if the projected total is < 45 min
+bench: {batch_sizes: [1, 32], repeats: 30, warmup: 5}
+models:
+  task_a: [majority, length_only, tfidf_lr, style_gbdt, lm_gbdt, codebert, lora, gpad, control, gpad_sign_neg, stack]
+  task_b: [majority, tfidf_lr, codebert_weighted, gpad_entropy_only, gpad_style_only, gpad_both, stack]
+optional_stages: [lm, lora, stack, bench, demo]
+degrade_to: lite_small      # kaggle_drive.py renders this on a relaunch: halves n_train, max_len 192

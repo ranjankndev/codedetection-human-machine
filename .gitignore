@@ -1,0 +1,28 @@
+__pycache__/
+*.py[cod]
+.venv/
+.env
+*.egg-info/
+.pytest_cache/
+# data, caches, checkpoints: never committed
+*.parquet
+cache/
+.done/
+checkpoints/
+*.pt
+*.safetensors
+*.bin
+kaggle.json
+.kaggle/
+# run artifacts: heavy or regenerable. Small JSON / MD / PNG under results/ IS committed.
+results/data/
+results/preds/
+results/ckpt/
+results/cache/
+results/logs/
+*.npz
+*.npy
+# the starter pack this repo was promoted from (kept on disk, not tracked)
+codedet-starter/
+!results/
+!fixtures/.gitkeep

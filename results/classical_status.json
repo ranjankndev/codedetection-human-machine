@@ -1,0 +1,9 @@
+{
+  "A:majority": "ok",
+  "A:length_only": "ok",
+  "A:tfidf_lr": "ok",
+  "A:style_gbdt": "ok",
+  "A:lm_gbdt": "ok",
+  "B:majority": "ok",
+  "B:tfidf_lr": "ok"
+}

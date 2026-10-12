@@ -1,0 +1,13 @@
+{
+  "id": "<KAGGLE_USERNAME>/codedet-<PRESET>",
+  "title": "codedet <PRESET>",
+  "code_file": "kaggle_entry.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": ["daniilor/semeval-2026-task13"],
+  "competition_sources": [],
+  "kernel_sources": []
+}

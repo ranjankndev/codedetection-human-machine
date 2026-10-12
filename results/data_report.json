@@ -1,0 +1,284 @@
+{
+  "A": {
+    "task": "A",
+    "preset": "local_cpu",
+    "seed": 42,
+    "source_files": [
+      "fixtures\\task_a.parquet"
+    ],
+    "rows_total": 600,
+    "label_names": [
+      "human",
+      "machine"
+    ],
+    "num_labels": 2,
+    "sizes": {
+      "train": 115,
+      "id_val": 40,
+      "ood_lang": 40
+    },
+    "dedup": {
+      "exact_removed": 0,
+      "near_dup_removed": 45
+    },
+    "notes": {
+      "label_vs_generator_agreement": 1.0,
+      "languages_available": [
+        "C++",
+        "Java",
+        "Python"
+      ],
+      "holdout_language": "Java"
+    },
+    "splits": {
+      "train": {
+        "name": "train",
+        "rows": 115,
+        "label_counts": {
+          "0": 79,
+          "1": 36
+        },
+        "language_counts": {
+          "Python": 72,
+          "C++": 43
+        },
+        "generator_counts": {
+          "Human": 79,
+          "deepseek-ai/deepseek-coder-1.3b": 5,
+          "meta-llama/CodeLlama-13b": 5,
+          "gpt-4.1-mini": 4,
+          "bigcode/starcoder2-3b": 4,
+          "Qwen/Qwen2.5-Coder-7B": 4,
+          "deepseek-ai/deepseek-coder-6.7b": 3,
+          "mistralai/Codestral-22B": 3,
+          "mistralai/Mistral-7B": 2,
+          "gpt-4o-mini": 2,
+          "bigcode/starcoder2-7b": 2,
+          "meta-llama/CodeLlama-7b": 1,
+          "Qwen/Qwen2.5-Coder-1.5B": 1
+        },
+        "family_counts": {
+          "human": 79,
+          "deepseek": 8,
+          "meta-llama": 6,
+          "openai": 6,
+          "bigcode": 6,
+          "mistral": 5,
+          "qwen": 5
+        },
+        "domain_counts": {
+          "algorithmic": 115
+        }
+      },
+      "id_val": {
+        "name": "id_val",
+        "rows": 40,
+        "label_counts": {
+          "1": 20,
+          "0": 20
+        },
+        "language_counts": {
+          "C++": 20,
+          "Python": 20
+        },
+        "generator_counts": {
+          "Human": 20,
+          "deepseek-ai/deepseek-coder-1.3b": 5,
+          "bigcode/starcoder2-3b": 3,
+          "meta-llama/CodeLlama-7b": 2,
+          "bigcode/starcoder2-7b": 2,
+          "gpt-4.1-mini": 2,
+          "gpt-4o-mini": 2,
+          "mistralai/Mistral-7B": 1,
+          "mistralai/Codestral-22B": 1,
+          "Qwen/Qwen2.5-Coder-7B": 1,
+          "Qwen/Qwen2.5-Coder-1.5B": 1
+        },
+        "family_counts": {
+          "human": 20,
+          "bigcode": 5,
+          "deepseek": 5,
+          "openai": 4,
+          "meta-llama": 2,
+          "mistral": 2,
+          "qwen": 2
+        },
+        "domain_counts": {
+          "algorithmic": 40
+        }
+      },
+      "ood_lang": {
+        "name": "ood_lang",
+        "rows": 40,
+        "label_counts": {
+          "1": 21,
+          "0": 19
+        },
+        "language_counts": {
+          "Java": 40
+        },
+        "generator_counts": {
+          "Human": 19,
+          "bigcode/starcoder2-3b": 4,
+          "Qwen/Qwen2.5-Coder-1.5B": 3,
+          "gpt-4.1-mini": 3,
+          "mistralai/Mistral-7B": 3,
+          "bigcode/starcoder2-7b": 2,
+          "mistralai/Codestral-22B": 2,
+          "deepseek-ai/deepseek-coder-1.3b": 1,
+          "deepseek-ai/deepseek-coder-6.7b": 1,
+          "Qwen/Qwen2.5-Coder-7B": 1,
+          "gpt-4o-mini": 1
+        },
+        "family_counts": {
+          "human": 19,
+          "bigcode": 6,
+          "mistral": 5,
+          "qwen": 4,
+          "openai": 4,
+          "deepseek": 2
+        },
+        "domain_counts": {
+          "algorithmic": 40
+        }
+      }
+    }
+  },
+  "B": {
+    "task": "B",
+    "preset": "local_cpu",
+    "seed": 42,
+    "source_files": [
+      "fixtures\\task_b.parquet"
+    ],
+    "rows_total": 600,
+    "label_names": [
+      "human",
+      "deepseek",
+      "qwen",
+      "bigcode",
+      "meta-llama",
+      "mistral",
+      "openai"
+    ],
+    "num_labels": 7,
+    "sizes": {
+      "train": 101,
+      "id_val": 40,
+      "ood_gen": 40
+    },
+    "dedup": {
+      "exact_removed": 0,
+      "near_dup_removed": 59
+    },
+    "notes": {
+      "holdout_generators": [
+        "bigcode/starcoder2-3b"
+      ],
+      "human_rows_train_before_cap": 77,
+      "human_rows_train_after_cap": 77,
+      "human_cap": 0.5
+    },
+    "splits": {
+      "train": {
+        "name": "train",
+        "rows": 101,
+        "label_counts": {
+          "0": 77,
+          "1": 24
+        },
+        "language_counts": {
+          "Python": 49,
+          "C++": 27,
+          "Java": 25
+        },
+        "generator_counts": {
+          "Human": 77,
+          "Qwen/Qwen2.5-Coder-1.5B": 4,
+          "meta-llama/CodeLlama-7b": 4,
+          "mistralai/Codestral-22B": 3,
+          "gpt-4.1-mini": 3,
+          "deepseek-ai/deepseek-coder-1.3b": 2,
+          "mistralai/Mistral-7B": 2,
+          "deepseek-ai/deepseek-coder-6.7b": 2,
+          "bigcode/starcoder2-7b": 2,
+          "gpt-4o-mini": 1,
+          "meta-llama/CodeLlama-13b": 1
+        },
+        "family_counts": {
+          "human": 77,
+          "mistral": 5,
+          "meta-llama": 5,
+          "qwen": 4,
+          "openai": 4,
+          "deepseek": 4,
+          "bigcode": 2
+        },
+        "domain_counts": {
+          "algorithmic": 101
+        }
+      },
+      "id_val": {
+        "name": "id_val",
+        "rows": 40,
+        "label_counts": {
+          "1": 21,
+          "0": 19
+        },
+        "language_counts": {
+          "C++": 14,
+          "Python": 13,
+          "Java": 13
+        },
+        "generator_counts": {
+          "Human": 19,
+          "meta-llama/CodeLlama-13b": 3,
+          "bigcode/starcoder2-7b": 3,
+          "gpt-4.1-mini": 3,
+          "deepseek-ai/deepseek-coder-6.7b": 3,
+          "Qwen/Qwen2.5-Coder-1.5B": 3,
+          "mistralai/Mistral-7B": 2,
+          "gpt-4o-mini": 2,
+          "meta-llama/CodeLlama-7b": 1,
+          "mistralai/Codestral-22B": 1
+        },
+        "family_counts": {
+          "human": 19,
+          "openai": 5,
+          "meta-llama": 4,
+          "mistral": 3,
+          "qwen": 3,
+          "deepseek": 3,
+          "bigcode": 3
+        },
+        "domain_counts": {
+          "algorithmic": 40
+        }
+      },
+      "ood_gen": {
+        "name": "ood_gen",
+        "rows": 40,
+        "label_counts": {
+          "0": 21,
+          "1": 19
+        },
+        "language_counts": {
+          "C++": 14,
+          "Python": 13,
+          "Java": 13
+        },
+        "generator_counts": {
+          "Human": 21,
+          "bigcode/starcoder2-3b": 19
+        },
+        "family_counts": {
+          "human": 21,
+          "bigcode": 19
+        },
+        "domain_counts": {
+          "algorithmic": 40
+        }
+      }
+    }
+  }
+}
