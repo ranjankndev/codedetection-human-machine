@@ -1,11 +1,13 @@
 preset: local_real         # real SemEval data, sized for a laptop CPU (no GPU available on this machine)
 seed: 42
-budget_minutes: 300
+budget_minutes: 420
 data:
   root: data/              # parquet downloaded from the official Kaggle/HF release
-  task_a: {n_train: 2400, n_val: 1000, n_ood: 1000, holdout_language: Java, stratify_by: [label, language]}
-  task_b: {n_train: 2400, n_val: 1000, n_ood: 1000, human_cap: 0.4, n_unseen_families: 3}
-text: {max_len: 192, head_tokens: 144}
+  # sized for an 8-core laptop CPU with no GPU: CodeBERT fine-tuning costs ~6 s/step here, so the
+  # budget goes into keeping every comparison intact (same rows, CIs, control) rather than into scale
+  task_a: {n_train: 1000, n_val: 500, n_ood: 500, holdout_language: Java, stratify_by: [label, language]}
+  task_b: {n_train: 1000, n_val: 500, n_ood: 500, human_cap: 0.4, n_unseen_families: 3}
+text: {max_len: 128, head_tokens: 96}
 model: {base: microsoft/codebert-base, entropy_alpha: 0.15, style_dim: 32, classifier_hidden: 384}
 train:
   epochs: 1
@@ -24,6 +26,8 @@ bootstrap: {n_boot: 1000}
 seeds: {cheap_models: 3, transformers: 1}
 bench: {batch_sizes: [1, 8], repeats: 10, warmup: 2}
 models:
-  task_a: [majority, length_only, tfidf_lr, style_gbdt, lm_gbdt, codebert, gpad, control, gpad_sign_neg, lora, stack]
-  task_b: [majority, tfidf_lr, codebert_weighted, gpad_entropy_only, gpad_style_only, gpad_both, stack]
+  # the three task-A rows that carry the central claim (codebert / gpad / control) plus the cheap
+  # baselines; sign-flip and LoRA are optional here and run only if the budget allows
+  task_a: [majority, length_only, tfidf_lr, style_gbdt, lm_gbdt, codebert, control, gpad, lora, stack]
+  task_b: [majority, tfidf_lr, codebert_weighted, gpad_entropy_only, gpad_both, stack]
 optional_stages: [lm, lora, stack, bench, demo]
