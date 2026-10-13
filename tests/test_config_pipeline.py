@@ -75,7 +75,7 @@ def test_stage_plan_covers_every_configured_model(tmp_path):
             if is_neural(model):
                 assert f"train_{task}_{model}" in names
     assert names[:2] == ["discover", "splits"]
-    assert names[-1] == "report"
+    assert names.index("report") == len(names) - 2 and names[-1] == "slides"
     assert "evaluate" in names and "analyze" in names
 
 

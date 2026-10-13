@@ -70,6 +70,9 @@ def build_stages(cfg: Config, a) -> list[Stage]:
         Stage("analyze", ["analyze.py", *common]),
         Stage("bench", ["bench.py", *common], required="bench" not in optional),
         Stage("report", ["make_report.py", "--out", a.out, "--readme", a.readme]),
+        # the deck is packaging, not evidence: it is always optional and exits 0 without python-pptx
+        Stage("slides", ["make_slides.py", "--out", a.out,
+                         "--deck", str(REPO / "docs" / "codedet_slides.pptx")], required=False),
     ]
     return stages
 
