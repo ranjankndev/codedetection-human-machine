@@ -16,14 +16,14 @@ import numpy as np
 import pandas as pd
 
 from codedet.artifacts import probs_as_logits, save_preds, write_model_metrics
-from codedet.classical import ClassicalModel, permutation_importance_gbdt, top_ngrams
+from codedet.classical import CLASSICAL_MODELS, ClassicalModel, permutation_importance_gbdt, top_ngrams
 from codedet.config import SPLITS, Config, RunPaths
 from codedet.eval import macro_f1_fast
 from codedet.utils import get_logger, read_json, set_seed, write_json
 
 log = get_logger("classical")
 
-CLASSICAL = ("majority", "length_only", "tfidf_lr", "style_gbdt", "lm_gbdt")
+CLASSICAL = CLASSICAL_MODELS
 
 
 def load_splits(paths: RunPaths, task: str) -> dict:

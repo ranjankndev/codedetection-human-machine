@@ -20,6 +20,9 @@ from .features import STYLE_NAMES, StyleScaler, style_matrix
 
 LENGTH_NAMES = ["n_chars", "n_lines", "mean_line_len", "space_ratio", "tab_ratio", "blank_line_ratio"]
 
+# the model names a config may list for the classical stage (the neural ones live in zoo.NEURAL_MODELS)
+CLASSICAL_MODELS = ("majority", "length_only", "tfidf_lr", "style_gbdt", "lm_gbdt")
+
 
 def length_matrix(codes) -> np.ndarray:
     """Deliberately content-free features: size and whitespace only."""
