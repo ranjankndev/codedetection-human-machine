@@ -48,6 +48,11 @@ True predictive entropy *does* appear in this project, under its own name, in `l
 NLL and `H(p(·|x<t))` from a frozen Qwen2.5-Coder-0.5B, used as features for a GBDT (`lm_gbdt`) and
 optionally fused into GPAD.
 
+Diagrams, the full ablation table and a map from each audit finding to the file that fixes it:
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Intended use, slices and limitations:
+[`docs/MODEL_CARD.md`](docs/MODEL_CARD.md). What was *not* done:
+[`KNOWN_GAPS.md`](KNOWN_GAPS.md).
+
 ## Results
 
 <!-- BEGIN GENERATED RESULTS - produced by scripts/make_report.py, do not edit by hand -->

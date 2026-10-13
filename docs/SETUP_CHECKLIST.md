@@ -26,6 +26,16 @@
 3. Settings → API → create a token. Save it as `~/.kaggle/kaggle.json` (Linux/macOS) or `C:\Users\<you>\.kaggle\kaggle.json` (Windows); on Linux/macOS run `chmod 600 ~/.kaggle/kaggle.json`.
    Use the method shown on Kaggle's current API page if it differs.
 4. `pip install kaggle` then test with `kaggle datasets list -s semeval` (should list results, not an auth error).
+   **Note from the 2026-10 build run:** a read test passing is NOT enough. Recent Kaggle CLI versions accept the
+   legacy `kaggle.json` key for read endpoints but reject *write* endpoints (`kernels push`, `datasets create`) with
+   "Authentication required". Test the write path too:
+   ```bash
+   kaggle kernels list --mine          # read
+   kaggle auth login                   # OAuth in the browser - needed before any push
+   ```
+   If `kaggle auth login` is not available in your version, generate a token at https://www.kaggle.com/settings/api
+   and save it to `~/.kaggle/access_token`. Until this is done, `scripts/kaggle_drive.py` exits 75 and the run
+   falls back to CPU / Colab (`colab/run_colab.ipynb`) or the manual notebook (`notebooks/kaggle_minimal.ipynb`).
 5. Put your Kaggle username in the repo's config when Claude asks nothing: it reads it with `kaggle config view` (username only).
 
 ## C. GitHub (optional, for the final push)
