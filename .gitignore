@@ -26,3 +26,7 @@ results/logs/
 codedet-starter/
 !results/
 !fixtures/.gitkeep
+build/
+data/
+results_real/
+results_kaggle_*/

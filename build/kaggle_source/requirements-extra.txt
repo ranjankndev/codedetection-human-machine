@@ -1,9 +1,0 @@
-# Only what Kaggle/Colab usually lack. Never list torch/transformers/numpy/pandas/pyarrow here.
-peft
-datasketch
-radon
-gradio
-matplotlib
-seaborn
-lightgbm
-python-pptx
