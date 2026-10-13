@@ -198,12 +198,20 @@ def verdict_lines(summary: dict, analysis: dict) -> list[str]:
     if gap and "length_only" in ladder:
         ood_key = sc.get("ood_split", "ood_lang")
         lo = ladder["length_only"]
-        out.append(f"**Shortcut probe.** A logistic regression on nothing but length and whitespace reaches "
-                   f"macro-F1 {lo.get('id_val', float('nan')):.3f} in-distribution and "
-                   f"{lo.get(ood_key, float('nan')):.3f} on the held-out language; the transformer "
-                   f"(`{sc.get('ceiling_model', '?')}`) is {gap.get('id_val', 0):+.3f} / "
-                   f"{gap.get(ood_key, 0):+.3f} above that. The size of that gap is how much of the task is "
-                   f"actually about authorship rather than formatting.")
+        model = sc.get("ceiling_model", "?")
+        gap_ood = gap.get(ood_key, 0.0)
+        line = (f"**Shortcut probe.** A logistic regression on nothing but length and whitespace reaches "
+                f"macro-F1 {lo.get('id_val', float('nan')):.3f} in-distribution and "
+                f"{lo.get(ood_key, float('nan')):.3f} on the held-out language. The transformer "
+                f"(`{model}`) differs from it by {gap.get('id_val', 0):+.3f} in-distribution and "
+                f"{gap_ood:+.3f} out of distribution.")
+        if gap_ood <= 0:
+            line += (" Out of distribution the fine-tuned encoder therefore buys **nothing** over six "
+                     "content-free features - whatever it learned in-distribution was formatting, not "
+                     "authorship.")
+        else:
+            line += " That gap is how much of the task is about authorship rather than formatting."
+        out.append(line)
     pert = sc.get("perturbations", {})
     if pert:
         worst = max(pert.items(), key=lambda kv: kv[1].get("stripped_drop", 0))
