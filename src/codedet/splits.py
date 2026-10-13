@@ -38,6 +38,18 @@ def find_task_parquets(root: str, task: str) -> list[str]:
     return train or scoped
 
 
+def find_validation_parquets(root: str, task: str) -> list[str]:
+    """Official validation files, if the release ships them WITH labels.
+
+    They are an in-distribution check against the organisers' own split, which is worth reporting next
+    to our proxy OOD splits; `build()` keeps them only when the labels are actually present.
+    """
+    cands = sorted(glob.glob(os.path.join(root, "**", "*.parquet"), recursive=True))
+    tag = f"task_{task.lower()}"
+    scoped = [p for p in cands if tag in p.replace("\\", "/").lower()] or cands
+    return [p for p in scoped if "valid" in Path(p).name.lower()]
+
+
 def find_label_map(parquet_path: str) -> dict | None:
     """The official `label_to_id.json` (if shipped next to the parquet) is the source of truth for names."""
     d = Path(parquet_path).parent
@@ -188,11 +200,27 @@ def build_task_b(df: pd.DataFrame, cfg, seed: int):
         rest = df.sample(frac=0.8, random_state=seed)
         ood = df.drop(rest.index)
         notes["holdout_generator_degraded_to_random"] = True
-    train, val = _train_val_split(rest, int(cfg.get("data.task_b.n_train", 2500)),
-                                  int(cfg.get("data.task_b.n_val", 600)), ["y", "language"], seed)
-    # the human cap is applied in build(), AFTER deduplication: dedup removes machine rows
-    # preferentially (generated code is more self-similar) and would otherwise undo the cap
-    notes["human_cap"] = float(cfg.get("data.task_b.human_cap", 0.4))
+    n_train = int(cfg.get("data.task_b.n_train", 2500))
+    n_val = int(cfg.get("data.task_b.n_val", 600))
+    cap = float(cfg.get("data.task_b.human_cap", 0.4))
+    # Validation first, with the TRUE prior (~88% human) - that is the distribution a deployed model meets.
+    val = stratified_subsample(rest, n_val, by=["y"], seed=seed)
+    pool = rest[~rest["row_id"].isin(set(val["row_id"]))]
+    # Training is built to a target composition instead of proportionally: a proportional sample of a
+    # corpus that is 88% human spends its budget on the majority class and leaves the 10 LLM families
+    # with a few dozen rows each. Machines first (stratified over families), then humans up to the cap.
+    machines = pool[~pool["generator"].map(is_human)]
+    humans = pool[pool["generator"].map(is_human)]
+    n_machine = min(len(machines), max(1, int(round(n_train * (1 - cap)))))
+    train_m = stratified_subsample(machines, n_machine, by=["y"], seed=seed)
+    n_human = min(len(humans), int(round(len(train_m) * cap / max(1 - cap, 1e-6))))
+    train_h = humans.sample(n=n_human, random_state=seed) if n_human else humans.iloc[:0]
+    train = pd.concat([train_m, train_h]).sample(frac=1, random_state=seed).reset_index(drop=True)
+    notes["train_composition"] = {"machine_rows": int(len(train_m)), "human_rows": int(len(train_h)),
+                                  "families_in_train": int(train_m["y"].nunique())}
+    # the cap is re-applied in build(), AFTER deduplication: dedup removes machine rows preferentially
+    # (generated code is more self-similar) and would otherwise push the human share back up
+    notes["human_cap"] = cap
     n_ood = int(cfg.get("data.task_b.n_ood", cfg.get("data.task_b.n_val", 600)))
     ood = stratified_subsample(ood, n_ood, by=["y"], seed=seed)
     return {"train": train, "id_val": val, "ood_gen": ood}, notes
@@ -238,6 +266,30 @@ def write_splits(paths, task: str, splits: dict) -> dict:
     return sizes
 
 
+def load_official_validation(data_root: str, task: str, names: list[str], n: int, seed: int, notes: dict):
+    """Use the organisers' validation parquet as an extra eval split when it carries usable labels."""
+    files = find_validation_parquets(data_root, task)
+    if not files:
+        return None
+    try:
+        df = pd.concat([load_split(f) for f in files], ignore_index=True)
+        frame, got_names, _ = prepare_frame(df, task)
+        if task.upper() == "B":
+            idx = {n_: i for i, n_ in enumerate(names)}
+            known = frame["family"].isin(idx)
+            notes["official_val_rows_dropped_unknown_family"] = int((~known).sum())
+            frame = frame[known].copy()
+            frame["y"] = frame["family"].map(idx).astype(int)
+        if frame["y"].nunique() < 2:
+            notes["official_val_skipped"] = "labels missing or single-class"
+            return None
+        notes["official_val_files"] = files
+        return stratified_subsample(frame, n, by=["y"], seed=seed)
+    except Exception as e:  # an unlabeled or differently shaped release must not break the run
+        notes["official_val_skipped"] = f"{type(e).__name__}: {e}"[:200]
+        return None
+
+
 def build(task: str, cfg, paths, data_root: str, seed: int | None = None) -> dict:
     """Full split pipeline for one task. Returns the per-task block of results/data_report.json."""
     seed = cfg.seed if seed is None else seed
@@ -256,6 +308,10 @@ def build(task: str, cfg, paths, data_root: str, seed: int | None = None) -> dic
     df, names, notes = prepare_frame(df, task, find_label_map(used[0]))
     splits, split_notes = (build_task_a if task.upper() == "A" else build_task_b)(df, cfg, seed)
     notes.update(split_notes)
+    official = load_official_validation(data_root, task, names, int(cfg.get(f"data.task_{task.lower()}.n_val", 500)),
+                                        seed, notes)
+    if official is not None:
+        splits["official_val"] = official
     dup = deduplicate(splits)
     if task.upper() == "B":
         notes.update(apply_human_cap(splits, float(notes.get("human_cap", 0.4)), seed))

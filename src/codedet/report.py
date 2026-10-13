@@ -32,7 +32,7 @@ MODEL_LABELS = {
 
 SPLIT_LABELS = {
     "id_val": "ID val", "ood_lang": "OOD: unseen language", "ood_gen": "OOD: unseen generator",
-    "train": "train (in-sample)",
+    "official_val": "official validation set", "train": "train (in-sample)",
 }
 
 
@@ -66,7 +66,7 @@ def _table(header: Iterable[str], rows: Iterable[Iterable[str]]) -> str:
 def eval_splits(task_block: dict) -> list[str]:
     """Reported splits: ID-val first, then OOD; perturbed and in-sample splits live in their own tables."""
     seen = {s for m in task_block["models"].values() for s in m["splits"]}
-    order = [s for s in ("id_val", "ood_lang", "ood_gen") if s in seen]
+    order = [s for s in ("id_val", "official_val", "ood_lang", "ood_gen") if s in seen]
     return order
 
 

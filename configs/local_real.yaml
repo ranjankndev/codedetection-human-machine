@@ -1,0 +1,29 @@
+preset: local_real         # real SemEval data, sized for a laptop CPU (no GPU available on this machine)
+seed: 42
+budget_minutes: 300
+data:
+  root: data/              # parquet downloaded from the official Kaggle/HF release
+  task_a: {n_train: 2400, n_val: 1000, n_ood: 1000, holdout_language: Java, stratify_by: [label, language]}
+  task_b: {n_train: 2400, n_val: 1000, n_ood: 1000, human_cap: 0.4, n_unseen_families: 3}
+text: {max_len: 192, head_tokens: 144}
+model: {base: microsoft/codebert-base, entropy_alpha: 0.15, style_dim: 32, classifier_hidden: 384}
+train:
+  epochs: 1
+  batch_size: 8
+  lr: 2.0e-5
+  head_lr: 1.0e-4
+  grad_accum: 2            # effective batch 16, same as the GPU presets
+  fp16: false              # no CUDA here
+  patience: 1
+  loss_task_a: ce
+  loss_task_b: weighted_ce
+eval: {batch_size: 32}
+lm: {model: "Qwen/Qwen2.5-Coder-0.5B", max_len: 128, batch_size: 8, n_rows: 6000}
+lora: {r: 8, alpha: 16}
+bootstrap: {n_boot: 1000}
+seeds: {cheap_models: 3, transformers: 1}
+bench: {batch_sizes: [1, 8], repeats: 10, warmup: 2}
+models:
+  task_a: [majority, length_only, tfidf_lr, style_gbdt, lm_gbdt, codebert, gpad, control, gpad_sign_neg, lora, stack]
+  task_b: [majority, tfidf_lr, codebert_weighted, gpad_entropy_only, gpad_style_only, gpad_both, stack]
+optional_stages: [lm, lora, stack, bench, demo]

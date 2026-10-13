@@ -79,7 +79,10 @@ class Config:
 
 
 # Split names are part of the artifact contract: evaluation joins models by (task, split).
-SPLITS = {"A": ["train", "id_val", "ood_lang"], "B": ["train", "id_val", "ood_gen"]}
+# "official_val" is present only when the release ships a labeled validation parquet; every stage
+# iterates over the splits that actually exist on disk.
+SPLITS = {"A": ["train", "id_val", "ood_lang", "official_val"],
+          "B": ["train", "id_val", "ood_gen", "official_val"]}
 
 
 @dataclass
