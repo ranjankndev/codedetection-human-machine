@@ -30,8 +30,12 @@ lora: {r: 8, alpha: 16}
 bootstrap: {n_boot: 1000}
 seeds: {cheap_models: 3, transformers: 1}
 bench: {batch_sizes: [1, 8], repeats: 10, warmup: 2}
-stage_caps: {lm_features: 35, classical: 30, train: 45}
+stage_caps: {lm_features: 35, classical: 30, train: 90}
 models:
-  task_a: [majority, length_only, tfidf_lr, style_gbdt, lm_gbdt, codebert, control, gpad, gpad_sign_neg, lora, stack]
-  task_b: [majority, tfidf_lr, codebert_weighted, gpad_entropy_only, gpad_both, stack]
+  # ~20 min per transformer on this CPU, so the matrix is cut to the rows that carry a claim:
+  # codebert / control / gpad is the capacity-controlled ablation, and task B needs a weighted-CE
+  # baseline to test the old "entropy-only is best" story against. The sign-flip, LoRA and
+  # style-only rows stay in configs/lite.yaml for the GPU run (listed in KNOWN_GAPS.md).
+  task_a: [majority, length_only, tfidf_lr, style_gbdt, codebert, control, gpad, stack]
+  task_b: [majority, tfidf_lr, codebert_weighted, gpad_entropy_only, stack]
 optional_stages: [lm, lora, stack, bench, demo]

@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -105,9 +106,29 @@ def run_stage(stage: Stage, timeout: float, log_dir: Path, extra: list[str] | No
         pass
     if timed_out:
         return {"status": "failed", "seconds": round(time.time() - t0, 1), "returncode": rc,
-                "error": f"timeout after {timeout:.0f}s", "log": str(log_file)}
+                "error": f"timeout after {timeout:.0f}s", "reason": f"timeout after {timeout:.0f}s",
+                "log": str(log_file)}
+    full = log_file.read_text(encoding="utf-8", errors="replace") if rc and log_file.exists() else ""
     return {"status": "ok" if rc == 0 else "failed", "seconds": round(time.time() - t0, 1),
-            "returncode": rc, "error": None if rc == 0 else tail, "log": str(log_file)}
+            "returncode": rc, "error": None if rc == 0 else tail,
+            "reason": None if rc == 0 else failure_reason(full, rc), "log": str(log_file)}
+
+
+WIN_ACCESS_VIOLATION = 0xC0000005
+
+
+def failure_reason(log_text: str, rc: int) -> str:
+    """One readable line for KNOWN_GAPS: the first real exception, not the tail of the log."""
+    for line in log_text.splitlines():
+        s = line.strip()
+        if re.match(r"^[\w.]*(Error|Exception)\b:", s):
+            return s[:160]
+    if rc in (WIN_ACCESS_VIOLATION, WIN_ACCESS_VIOLATION - 2**32):
+        return "process crashed without a traceback (Windows access violation, usually out of memory)"
+    warnings = [ln.split("|")[-1].strip() for ln in log_text.splitlines() if "| WARNING |" in ln]
+    if warnings:
+        return warnings[-1][:160]
+    return f"exit code {rc}"
 
 
 def main() -> int:
@@ -205,10 +226,12 @@ def main() -> int:
             f"elapsed {status['elapsed_minutes']:.0f} min.", ""]
     if skipped:
         for s in gap_stages:
-            if True:
-                gaps.append(f"- **{s['stage']}** - {s['status']}"
-                            + (" (required)" if s["required"] else " (optional)")
-                            + (f": {(s.get('error') or '').strip()[:200]}" if s.get("error") else ""))
+            # skipped stages carry a short "error" ("not selected"); failed ones carry a parsed "reason"
+            why = s.get("reason") or (s.get("error") or "").strip()[:160]
+            log_ref = f" (log: `{Path(a.out).name}/logs/{Path(s['log']).name}`)" if s.get("log") else ""
+            gaps.append(f"- **{s['stage']}** - {s['status']}"
+                        + (" (required)" if s["required"] else " (optional)")
+                        + (f": {why}" if why else "") + log_ref)
         gaps += ["", "Everything not listed here ran to completion."]
     else:
         gaps += ["Every stage of this run completed; nothing was skipped or degraded."]

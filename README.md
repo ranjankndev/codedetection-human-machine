@@ -124,7 +124,7 @@ The original competition scripts are kept at git tag `legacy-code` (`git checkou
 
 - Official SemEval-2026 Task 13 data only; no third-party AI-code detectors (competition rule).
 - The CPU run uses 500 training rows and a 6-layer encoder; read its numbers as a comparison between
-  models, not as the best this approach can do. Two Task B models failed to train in that run.
+  models, not as the best this approach can do. Both Task B transformers ran out of memory in that run.
 - The OOD splits (held-out language, held-out generator) stand in for the organisers' hidden test sets.
 - A detector score is evidence, not proof. Read the false-accusation numbers above before using any
   such model on real people. What was not done: [`docs/KNOWN_GAPS.md`](docs/KNOWN_GAPS.md).
