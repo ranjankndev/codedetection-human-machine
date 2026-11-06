@@ -3,7 +3,7 @@
   "config": "C:\\dev\\CodeDetection-Human-Machine\\configs\\local_real.yaml",
   "data_root": "data",
   "budget_minutes": 300.0,
-  "started": "2026-10-13T16:21:48",
+  "started": "2026-11-06T20:01:58",
   "python": "3.14.0",
   "stages": [
     {
@@ -44,83 +44,83 @@
     {
       "stage": "train_A_control",
       "required": true,
-      "status": "ok",
-      "seconds": 3353.1,
-      "returncode": 0,
-      "error": null,
-      "log": "results_real\\logs\\train_A_control.log"
+      "status": "cached",
+      "seconds": 0.0,
+      "error": null
     },
     {
       "stage": "train_A_gpad",
       "required": true,
-      "status": "ok",
-      "seconds": 3524.7,
-      "returncode": 0,
-      "error": null,
-      "log": "results_real\\logs\\train_A_gpad.log"
+      "status": "cached",
+      "seconds": 0.0,
+      "error": null
     },
     {
       "stage": "train_B_codebert_weighted",
       "required": true,
-      "status": "failed",
-      "seconds": 166.4,
-      "returncode": 3221225477,
-      "error": "ECTED |  | \nlm_head.decoder.bias      | UNEXPECTED |  | \nlm_head.dense.weight      | UNEXPECTED |  | \nlm_head.dense.bias        | UNEXPECTED |  | \nlm_head.layer_norm.weight | UNEXPECTED |  | \nlm_head.decoder.weight    | UNEXPECTED |  | \nlm_head.bias              | UNEXPECTED |  | \n\nNotes:\n- UNEXPECTED:\tcan be ignored when loading from different task/architecture; not ok if you expect identical arch.\n[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (672 > 512). Running this sequence through the model will result in indexing errors\n",
-      "log": "results_real\\logs\\train_B_codebert_weighted.log"
+      "status": "ok",
+      "seconds": 494.6,
+      "returncode": 0,
+      "error": null,
+      "reason": null,
+      "log": "results\\logs\\train_B_codebert_weighted.log"
     },
     {
       "stage": "train_B_gpad_entropy_only",
       "required": true,
-      "status": "failed",
-      "seconds": 97.1,
-      "returncode": 1,
-      "error": "  File \"C:\\Users\\rkn15\\AppData\\Roaming\\Python\\Python314\\site-packages\\torch\\_dynamo\\utils.py\", line 860, in dump_compile_times\n    log.info(compile_times(repr=\"str\", aggregate=True))\n  File \"C:\\Users\\rkn15\\AppData\\Roaming\\Python\\Python314\\site-packages\\torch\\_dynamo\\utils.py\", line 846, in compile_times\n    out += tabulate(rows, headers=(\"Function\", \"Runtimes (s)\"))\n  File \"C:\\Users\\rkn15\\AppData\\Roaming\\Python\\Python314\\site-packages\\torch\\_dynamo\\utils.py\", line 244, in tabulate\n    return tabulate.tabulate(rows, headers=headers)\nAttributeError: module 'tabulate' has no attribute 'tabulate'\n",
-      "log": "results_real\\logs\\train_B_gpad_entropy_only.log"
+      "status": "ok",
+      "seconds": 384.1,
+      "returncode": 0,
+      "error": null,
+      "reason": null,
+      "log": "results\\logs\\train_B_gpad_entropy_only.log"
     },
     {
       "stage": "stack",
       "required": false,
-      "status": "failed",
-      "seconds": 20.0,
-      "returncode": 1,
-      "error": "18:24:48 | stack | INFO | task A stack on gpad: id_val=0.963 official_val=0.957 ood_lang=0.747 train=1.000\n18:24:48 | stack | WARNING | task B: no neural predictions to stack on; skipping\n",
-      "log": "results_real\\logs\\stack.log"
+      "status": "ok",
+      "seconds": 16.3,
+      "returncode": 0,
+      "error": null,
+      "reason": null,
+      "log": "results\\logs\\stack.log"
     },
     {
       "stage": "evaluate",
       "required": true,
       "status": "ok",
-      "seconds": 14.9,
+      "seconds": 9.8,
       "returncode": 0,
       "error": null,
-      "log": "results_real\\logs\\evaluate.log"
+      "reason": null,
+      "log": "results\\logs\\evaluate.log"
     },
     {
       "stage": "analyze",
       "required": true,
       "status": "ok",
-      "seconds": 14.5,
+      "seconds": 8.9,
       "returncode": 0,
       "error": null,
-      "log": "results_real\\logs\\analyze.log"
+      "reason": null,
+      "log": "results\\logs\\analyze.log"
     },
     {
       "stage": "bench",
       "required": false,
-      "status": "ok",
-      "seconds": 272.0,
-      "returncode": 0,
-      "error": null,
-      "log": "results_real\\logs\\bench.log"
+      "status": "cached",
+      "seconds": 0.0,
+      "error": null
     },
     {
       "stage": "report",
       "required": true,
       "status": "ok",
-      "seconds": 0.6,
+      "seconds": 0.7,
       "returncode": 0,
       "error": null,
-      "log": "results_real\\logs\\report.log"
+      "reason": null,
+      "log": "results\\logs\\report.log"
     },
     {
       "stage": "slides",
@@ -129,21 +129,15 @@
       "seconds": 1.4,
       "returncode": 0,
       "error": null,
-      "log": "results_real\\logs\\slides.log"
+      "reason": null,
+      "log": "results\\logs\\slides.log"
     }
   ],
   "torch": "2.10.0+cpu",
   "cuda": false,
-  "elapsed_minutes": 128.07,
-  "failed_required": [
-    "train_B_codebert_weighted",
-    "train_B_gpad_entropy_only"
-  ],
-  "status": "failed",
+  "elapsed_minutes": 15.27,
+  "failed_required": [],
+  "status": "ok",
   "degraded_stages": [],
-  "skipped_or_failed": [
-    "train_B_codebert_weighted",
-    "train_B_gpad_entropy_only",
-    "stack"
-  ]
+  "skipped_or_failed": []
 }

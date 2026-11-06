@@ -430,37 +430,65 @@
     "B": {
       "shortcut": {
         "ood_split": "ood_gen",
-        "perturbations": {},
+        "perturbations": {
+          "codebert_weighted": {
+            "ood_macro_f1": 0.08249158249158249,
+            "nocomments": 0.08252264340825227,
+            "nocomments_drop": -0.0,
+            "stripped": 0.0814111261872456,
+            "stripped_drop": 0.0011
+          },
+          "gpad_entropy_only": {
+            "ood_macro_f1": 0.08452088452088452,
+            "nocomments": 0.0848918523337128,
+            "nocomments_drop": -0.0004,
+            "stripped": 0.08419328419328419,
+            "stripped_drop": 0.0003
+          }
+        },
         "shortcut_ladder": {
+          "codebert_weighted": {
+            "id_val": 0.09245890683244129,
+            "ood_gen": 0.08249158249158249
+          },
+          "gpad_entropy_only": {
+            "id_val": 0.09933037464519265,
+            "ood_gen": 0.08452088452088452
+          },
           "majority": {
             "id_val": 0.0851063829787234,
             "ood_gen": 0.08728533165274933
+          },
+          "stack": {
+            "id_val": 0.14757399927597245,
+            "ood_gen": 0.1505592673222731
           },
           "tfidf_lr": {
             "id_val": 0.1444059208765091,
             "ood_gen": 0.12506475006475007
           }
-        }
+        },
+        "ceiling_model": "codebert_weighted"
       },
       "imbalance": {
-        "model": "tfidf_lr",
+        "model": "codebert_weighted",
         "splits": {
           "id_val": {
-            "macro_f1": 0.1444059208765091,
-            "accuracy": 0.5966666666666667,
-            "balanced_accuracy": 0.21806375442739076,
-            "accuracy_minus_macro_f1": 0.4523,
+            "macro_f1": 0.09245890683244129,
+            "accuracy": 0.7666666666666667,
+            "balanced_accuracy": 0.12977174340810704,
+            "accuracy_minus_macro_f1": 0.6742,
             "per_class": {
               "human": {
-                "precision": 0.9550561797752809,
-                "recall": 0.6439393939393939,
-                "f1": 0.7692307692307693,
+                "precision": 0.9224489795918367,
+                "recall": 0.8560606060606061,
+                "f1": 0.888015717092338,
                 "support": 264
               },
               "deepseek": {
-                "precision": 0.25,
-                "recall": 0.3333333333333333,
-                "f1": 0.2857142857142857,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0,
                 "support": 3
               },
               "qwen": {
@@ -488,21 +516,21 @@
                 "support": 1
               },
               "phi": {
-                "precision": 0.1,
-                "recall": 0.25,
-                "f1": 0.14285714285714285,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0,
                 "support": 4
               },
               "meta-llama": {
-                "precision": 0.08333333333333333,
-                "recall": 0.2,
-                "f1": 0.11764705882352941,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0,
                 "support": 5
               },
               "ibm-granite": {
-                "precision": 0.05405405405405406,
-                "recall": 0.4,
-                "f1": 0.09523809523809523,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0,
                 "support": 5
               },
               "mistral": {
@@ -512,23 +540,23 @@
                 "support": 3
               },
               "openai": {
-                "precision": 0.10526315789473684,
+                "precision": 0.07272727272727272,
                 "recall": 0.5714285714285714,
-                "f1": 0.17777777777777778,
+                "f1": 0.12903225806451613,
                 "support": 7
               }
             }
           },
           "ood_gen": {
-            "macro_f1": 0.12506475006475007,
-            "accuracy": 0.6033333333333334,
-            "balanced_accuracy": 0.37937080969571946,
-            "accuracy_minus_macro_f1": 0.4783,
+            "macro_f1": 0.08249158249158249,
+            "accuracy": 0.8166666666666667,
+            "balanced_accuracy": 0.22111913357400723,
+            "accuracy_minus_macro_f1": 0.7342,
             "per_class": {
               "human": {
-                "precision": 0.9831460674157303,
-                "recall": 0.631768953068592,
-                "f1": 0.7692307692307693,
+                "precision": 0.9315589353612167,
+                "recall": 0.8844765342960289,
+                "f1": 0.9074074074074074,
                 "support": 277
               },
               "deepseek": {
@@ -538,9 +566,9 @@
                 "support": 0
               },
               "qwen": {
-                "precision": 0.16666666666666666,
-                "recall": 0.1,
-                "f1": 0.125,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0,
                 "support": 10
               },
               "01-ai": {
@@ -550,9 +578,9 @@
                 "support": 0
               },
               "bigcode": {
-                "precision": 0.25,
-                "recall": 0.5,
-                "f1": 0.3333333333333333,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0,
                 "support": 6
               },
               "gemma": {
@@ -568,9 +596,9 @@
                 "support": 0
               },
               "meta-llama": {
-                "precision": 0.1,
-                "recall": 0.2857142857142857,
-                "f1": 0.14814814814814814,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0,
                 "support": 7
               },
               "ibm-granite": {
@@ -604,16 +632,16 @@
         }
       },
       "calibration": {
-        "model": "tfidf_lr",
-        "temperature_fitted_on_id_val": 0.14429598259974602,
+        "model": "codebert_weighted",
+        "temperature_fitted_on_id_val": 0.23810569181224303,
         "ece": {
           "id_val": {
-            "before": 0.46042823411165684,
-            "after_temperature": 0.16294696410746284
+            "before": 0.5221560984069487,
+            "after_temperature": 0.07234466189831178
           },
           "ood_gen": {
-            "before": 0.4658673751666658,
-            "after_temperature": 0.12202108577509042
+            "before": 0.5724865431707776,
+            "after_temperature": 0.051485344930186
           }
         },
         "figures": {

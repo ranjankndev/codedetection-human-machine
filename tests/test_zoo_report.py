@@ -117,3 +117,18 @@ def test_splice_replaces_only_the_generated_region():
     doc = f"intro\n\n{GENERATED_BEGIN}\nold\n{GENERATED_END}\n\noutro\n"
     new = splice_generated(doc, f"{GENERATED_BEGIN}\nnew\n{GENERATED_END}")
     assert "intro" in new and "outro" in new and "new" in new and "old" not in new
+
+
+def test_a_model_at_the_majority_floor_is_flagged_and_its_comparison_dropped():
+    from codedet.evaluation.report import collapsed_models
+
+    def m(f1, cm):
+        return {"splits": {"id_val": {"macro_f1": f1, "accuracy": 0.8, "confusion_matrix": cm}}}
+    cm_two_classes = [[5, 0, 0], [3, 0, 0], [0, 0, 2]]
+    b = {"num_labels": 3, "models": {"majority": m(0.30, [[10, 0, 0]] * 3),
+                                     "gpad_entropy_only": m(0.31, cm_two_classes),
+                                     "codebert_weighted": m(0.30, cm_two_classes), "tfidf_lr": m(0.60, cm_two_classes)},
+         "paired": {"gpad_entropy_only_vs_codebert_weighted": {"verdict": "better on id_val"}}}
+    assert collapsed_models(b) == {"gpad_entropy_only": 2, "codebert_weighted": 2}
+    lines = " ".join(verdict_lines({"tasks": {"B": b}}, {"tasks": {}}))
+    assert "did not learn the task" in lines and "entropy-only is best" not in lines

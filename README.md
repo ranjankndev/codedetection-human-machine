@@ -28,7 +28,8 @@ One-page report with figures: [`results/REPORT.md`](results/REPORT.md). Every ta
 - **A length-and-whitespace shortcut is hard to beat.** Six content-free features score 0.903 in-distribution and 0.513 on the unseen language; the transformer (`gpad`) is +0.047 and -0.036 against that. Out of distribution it learned formatting, not authorship.
 - **Confidence does not survive the shift.** Calibration error (ECE) is 0.027 in-distribution but 0.337 on the unseen language, even after temperature scaling.
 - **The default threshold accuses too many humans.** On the unseen language, 0.5 flags 85% of human snippets as machine; a threshold chosen for a 5:1 cost brings that to 38%, still far from usable.
-- **Task B is an imbalance problem.** Always guessing the biggest class gives accuracy 0.880 but macro-F1 0.085; the best model here (`tfidf_lr`) reaches macro-F1 0.144. Accuracy alone would hide this.
+- **Task B is an imbalance problem.** Always guessing the biggest class gives accuracy 0.880 but macro-F1 0.085; the best model here (`stack`) reaches macro-F1 0.148. Accuracy alone would hide this.
+- **The Task B transformers did not learn the task.** `codebert_weighted` (2 of 11 classes), `gpad_entropy_only` (2 of 11 classes) predict only a few classes and score within 0.02 macro-F1 of always guessing the biggest class, so comparisons between them say nothing about the architectures.
 
 ### Task A - human or machine?
 
@@ -58,10 +59,11 @@ Rows: in-distribution n=300, unseen generator n=300.
 
 | model | in-distribution | unseen generator |
 |---|---|---|
+| Stacked ensemble | 0.148 [0.093, 0.201] | 0.151 [0.094, 0.190] |
 | Character n-grams + logistic regression | 0.144 [0.091, 0.202] | 0.125 [0.088, 0.159] |
 | Majority class (floor) | 0.085 [0.083, 0.087] | 0.087 [0.086, 0.089] |
-
-Not in this run (training stage failed or was skipped): `codebert_weighted`, `gpad_entropy_only`.
+| GPAD, entropy only | 0.099 [0.085, 0.115] | 0.085 [0.082, 0.086] |
+| CodeBERT, class-weighted loss | 0.092 [0.082, 0.104] | 0.082 [0.080, 0.085] |
 
 <!-- END GENERATED RESULTS -->
 
@@ -124,7 +126,7 @@ The original competition scripts are kept at git tag `legacy-code` (`git checkou
 
 - Official SemEval-2026 Task 13 data only; no third-party AI-code detectors (competition rule).
 - The CPU run uses 500 training rows and a 6-layer encoder; read its numbers as a comparison between
-  models, not as the best this approach can do. Both Task B transformers ran out of memory in that run.
+  models, not as the best this approach can do. The Task B transformers barely beat guessing the biggest class with that little data.
 - The OOD splits (held-out language, held-out generator) stand in for the organisers' hidden test sets.
 - A detector score is evidence, not proof. Read the false-accusation numbers above before using any
   such model on real people. What was not done: [`docs/KNOWN_GAPS.md`](docs/KNOWN_GAPS.md).

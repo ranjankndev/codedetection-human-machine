@@ -1,170 +1,178 @@
-# Error analysis - task B (tfidf_lr, split `ood_gen`)
+# Error analysis - task B (codebert_weighted, split `ood_gen`)
 
 The 10 most *confident* mistakes (confidence after softmax, no temperature).
 Confident errors are the ones that would actually harm a user, so they are the ones worth reading.
 
-## 1. true `human` -> predicted `meta-llama` (confidence 0.24)
-- language=Java, generator=Human
-- row_id `B-260a37323abecc67-367514`
+## 1. true `qwen` -> predicted `human` (confidence 0.29)
+- language=Java, generator=Qwen/Qwen2.5-Coder-1.5B
+- row_id `B-ff123f719d3c55ae-124040`
 
 ```
-class Solution {
-    public long maxScore(int[] nums, int x) {
-        int len = nums.length;
-        long maxEven = 0, maxOdd = 0;
-        for (int i = len - 1; i >= 0; --i) {
-            if (i == 0) {
-                if (nums[i] % 2 == 0) {
-                    return Math.max(nums[i] + maxEven, maxOdd + nums[i] - x);
-                } else {
-                    return Math.max(nums[i] + maxOdd, maxEven + nums[i] - x);
-                }
-            }
+{
+    Scanner sc = null;
+    int row, column;
+    try
+    {
+        if(!matrixFile.exists())
+        {
+            throw new FileNotFoundException("the file does not exist");
+        }
+        sc = new Scanner(matrixFile);
+        // get the number of rows and columns from the first line and make sure that the
+        // contents of the matrix match the number of elements.
 ```
 
-## 2. true `human` -> predicted `bigcode` (confidence 0.22)
-- language=Python, generator=Human
-- row_id `B-e54e40f6eab69abc-82237`
+## 2. true `qwen` -> predicted `human` (confidence 0.27)
+- language=JavaScript, generator=Qwen/Qwen2.5-Coder-1.5B
+- row_id `B-b189cb5bd35b3319-297517`
 
 ```
-n = int(input())
-a = list(map(int, input().split()))
-b = []
-c = []
-for i in range(n - 1):
-	if abs(a[i] - a[i + 1]) == 1:
-		c.append(max(a[i], a[i + 1]))
-		continue
-	elif a[i] == a[i + 1]:
-		exit(print('NO'))
-	else:
-		b.append(abs(a[i] - a[i + 1]))
+function countSubstrings(s) {
+    let count = 0;
+    const n = s.length;
+
+    // Check for odd length palindromes
+    for (let i = 0; i < n; i++) {
+        let left = i;
+        let right = i;
+        while (left >= 0 && right < n && s[left] === s[right]) {
+            count++;
+            left--;
+            right++;
 ```
 
-## 3. true `human` -> predicted `bigcode` (confidence 0.22)
-- language=Python, generator=Human
-- row_id `B-a7b383e260782411-424806`
+## 3. true `qwen` -> predicted `human` (confidence 0.27)
+- language=Python, generator=Qwen/Qwen2.5-Coder-1.5B
+- row_id `B-9922a81ff90b84a4-484383`
 
 ```
-def mini(l1, l2):
-	l1 = l1[::-1]
-	if l1 == l2:
-		print('YES')
-	else:
-		print('NO')
-s1 = input()
-s2 = input()
-l1 = list(s1)
-l2 = list(s2)
-mini(l1, l2)
-```
+import secrets
 
-## 4. true `human` -> predicted `phi` (confidence 0.21)
-- language=Python, generator=Human
-- row_id `B-8374c3bce8ffebc2-203780`
-
-```
-try:
-	from debug import debug, timer
-except ImportError:
-	pass
-from sys import stdin
-input = stdin.readline
-
-def rii():
-	return range(int(input().strip()))
-
-def ii():
-	return int(input().strip())
-```
-
-## 5. true `human` -> predicted `meta-llama` (confidence 0.20)
-- language=Python, generator=Human
-- row_id `B-c47b5f07374d8ebb-260694`
-
-```
-class Solution:
-    def subarrayLCM(self, nums: List[int], k: int) -> int:
-        def lcm(a, b):
-            return abs(a*b) // math.gcd(a, b)
-        N = len(nums)
-        ans = 0
-        for i in range(N):
-            l = 1
-            for j in range(i, N):
-                l = lcm(l, nums[j])
-                if l == k:
-                    ans += 1
-```
-
-## 6. true `human` -> predicted `meta-llama` (confidence 0.19)
-- language=JavaScript, generator=Human
-- row_id `B-a99c6c39a7b9b2f9-192675`
-
-```
-/**
- * @param {number[]} nums
- * @return {number}
- */
-var maxOperations = function(nums) {
-    let res = 1, sum = nums[0] + nums[1];
+def hash_password(password, salt=None):
+    if salt is None:
+        salt = secrets.token_hex(29)
     
-    for(let i=3;i<nums.length;i+=2) {
-        if(nums[i]+nums[i-1] == sum) res++;
-        else break;
-    }
-    
+    hashed_password = bcrypt.hashpw(password.encode("UTF-8"), salt.encode("UTF-8"))
+    return hashed_password, salt
+
+def validate_password(password, hashed_password):
+    return bcrypt.checkpw(password.encode("UTF-8"), hashed_password)
 ```
 
-## 7. true `bigcode` -> predicted `phi` (confidence 0.19)
+## 4. true `qwen` -> predicted `human` (confidence 0.25)
+- language=Python, generator=Qwen/Qwen2.5-Coder-1.5B
+- row_id `B-b0b28a2d9d306484-90446`
+
+```
+def are_strings_equivalent(S, T):
+    counter_S = {}
+    counter_T = {}
+
+    # Count characters in S
+    for c in S:
+        counter_S[c] = counter_S.get(c, 0) + 1
+    print("Counter_S:", counter_S)
+
+    # Count characters in T
+    for c in T:
+        counter_T[c] = counter_T.get(c, 0) + 1
+```
+
+## 5. true `bigcode` -> predicted `human` (confidence 0.25)
 - language=Python, generator=bigcode/starcoder2-15b
-- row_id `B-e12b147465251c84-372832`
+- row_id `B-8e6c65954bd6e1eb-362918`
 
 ```
-zzz = input().split()
-a = 0
-x = h
-for i in range(n):
-    a = a + int(zzz[i]) * x
-    
-    x -= 1
-        
-print(a)
+t = int(input())
+for i in range(t):
+    n = int(input())
+    p = list(map(int, input().split()[::-1]))
+    res = deque()
+    for j in p:
+        if res and res[0] < j and res[-1] >= j:
+            res.appendleft(j)
+        else:
+            res.append(j)
+        print(*res)
 ```
 
-## 8. true `human` -> predicted `bigcode` (confidence 0.19)
-- language=Python, generator=Human
-- row_id `B-b7fe3b7c07a7ff31-37642`
+## 6. true `bigcode` -> predicted `human` (confidence 0.25)
+- language=Python, generator=bigcode/starcoder2-15b
+- row_id `B-f46ce3cc28f7416b-310909`
 
 ```
-n = int(input())
-arr = []
-for _ in range(n):
-	arr.append(list(map(int, input().split())))
-for i in range(n):
-	if arr[i][0] % 2 == arr[i][1] % 2 and arr[i][0] >= arr[i][1] ** 2:
-		print('YES')
-	else:
-		print('NO')
+s = input()
+t = input()
+
+if s.count('*') > 1:
+    print('NO')
+else:
+    if s.count('*') == 1:
+        if s.index('*') == 0:
+            if s[1:] == t[-(m-1):]:
+                print('YES')
+            else:
+                print('NO')
 ```
 
-## 9. true `human` -> predicted `phi` (confidence 0.18)
-- language=Python, generator=Human
-- row_id `B-526c7787c506c59e-283876`
+## 7. true `qwen` -> predicted `human` (confidence 0.25)
+- language=Python, generator=Qwen/Qwen2.5-Coder-1.5B
+- row_id `B-74614bca4a06f23b-105278`
 
 ```
-N = int(input())
-ls = []
-for i in range(N):
-	ls.append(input())
-count = 1
-for i in range(len(ls) - 1):
-	if ls[i][1] == ls[i + 1][0]:
-		count += 1
-print(count)
+def egg_distribution(n, prices):
+    total_cost_a = sum(price[0] for price in prices)
+    total_cost_g = sum(price[1] for price in prices)
+
+    if total_cost_a == total_cost_g:
+        return ('A' * n)
+
+    total_cost = total_cost_a + total_cost_g
+
+    if total_cost % 2 == 0:
+        return ('A' * (n // 2) + 'G' * (n // 2))
+    else:
 ```
 
-## 10. true `meta-llama` -> predicted `phi` (confidence 0.18)
+## 8. true `bigcode` -> predicted `human` (confidence 0.25)
+- language=C++, generator=bigcode/starcoder2-15b
+- row_id `B-c80c2f1ee2d8f612-175174`
+
+```
+using namespace std;
+typedef pair<int, int> pi;
+using ll = long long;
+int n, m;
+int main() {
+    cin.tie(0);
+    ios::sync_with_stdio(0);
+    cin >> n >> m;
+    for (int i = 0; i < m; i++) {
+        int u, v, w; cin >> u >> v >> w;
+        adj[u].push_back({v, w});
+        cost[make_pair(u, v)] = w;
+```
+
+## 9. true `meta-llama` -> predicted `human` (confidence 0.24)
+- language=Python, generator=meta-llama/Llama-3.1-8B
+- row_id `B-dbf9ec2661d269fd-335039`
+
+```
+if h < 0 or l < 0:
+		return False
+	tmp = l
+	while h > 1:
+		tmp -= 1
+		h = (h // 2) + 10
+	if tmp < 0:
+		return False
+	if h <= 0 and tmp >= v:
+		return True
+	return False
+
+```
+
+## 10. true `meta-llama` -> predicted `human` (confidence 0.24)
 - language=Python, generator=meta-llama/Llama-3.1-8B
 - row_id `B-19e23cc9125e51b6-36923`
 

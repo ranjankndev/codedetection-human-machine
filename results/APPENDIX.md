@@ -106,8 +106,11 @@ GPAD (entropy bias + style), in-distribution:
 
 | id | model | in-distribution | official val set | unseen generator | seeds | seed sd |
 |---|---|---|---|---|---|---|
+| A8 | Stacked ensemble | 0.148 [0.093, 0.201] | 0.156 [0.108, 0.199] | 0.151 [0.094, 0.190] | 1 | - |
 | A1 | Character n-grams + logistic regression | 0.144 [0.091, 0.202] | 0.096 [0.068, 0.130] | 0.125 [0.088, 0.159] | 3 | 0.000 |
 | A0a | Majority class (floor) | 0.085 [0.083, 0.087] | 0.085 [0.084, 0.087] | 0.087 [0.086, 0.089] | 1 | - |
+| B3 | GPAD, entropy only | 0.099 [0.085, 0.115] | 0.089 [0.080, 0.102] | 0.085 [0.082, 0.086] | 1 | - |
+| B2 | CodeBERT, class-weighted loss | 0.092 [0.082, 0.104] | 0.087 [0.078, 0.098] | 0.082 [0.080, 0.085] | 1 | - |
 
 ### Paired comparisons
 
@@ -115,18 +118,48 @@ Same rows. *different* = the bootstrap CI excludes zero **and** McNemar p < 0.05
 
 | comparison | split | n | macro-F1 diff [95% CI] | McNemar p | verdict |
 |---|---|---|---|---|---|
+| gpad_entropy_only - codebert_weighted | in-distribution | 300 | +0.007 [+0.002, +0.013] | 0.00258 | **different** |
+| gpad_entropy_only - codebert_weighted | official val set | 299 | +0.002 [-0.006, +0.008] | 0.00434 | unclear (tests disagree) |
+| gpad_entropy_only - codebert_weighted | unseen generator | 300 | +0.002 [+0.001, +0.004] | 0.00235 | **different** |
 | tfidf_lr - majority | in-distribution | 300 | +0.059 [+0.004, +0.116] | 5.46e-19 | **different** |
 | tfidf_lr - majority | official val set | 299 | +0.011 [-0.018, +0.045] | 6.98e-26 | unclear (tests disagree) |
 | tfidf_lr - majority | unseen generator | 300 | +0.038 [-0.000, +0.072] | 1.25e-23 | unclear (tests disagree) |
 
+### Stress test: strip comments and formatting
+
+Same OOD rows, macro-F1. *change* is perturbed minus original: negative = the model got worse.
+
+| model | original | comments removed | change | comments + formatting stripped | change |
+|---|---|---|---|---|---|
+| CodeBERT, class-weighted loss | 0.082 | 0.083 | +0.000 | 0.081 | -0.001 |
+| GPAD, entropy only | 0.085 | 0.085 | +0.000 | 0.084 | -0.000 |
+
 ### Calibration
 
-Character n-grams + logistic regression; temperature fitted on in-distribution data: **T = 0.14**. Lower ECE is better.
+CodeBERT, class-weighted loss; temperature fitted on in-distribution data: **T = 0.24**. Lower ECE is better.
 
 | split | ECE raw | ECE after temperature |
 |---|---|---|
-| in-distribution | 0.460 | 0.163 |
-| unseen generator | 0.466 | 0.122 |
+| in-distribution | 0.522 | 0.072 |
+| unseen generator | 0.572 | 0.051 |
+
+### Per-class breakdown
+
+CodeBERT, class-weighted loss, in-distribution:
+
+| class | precision | recall | F1 | support |
+|---|---|---|---|---|
+| human | 0.922 | 0.856 | 0.888 | 264 |
+| deepseek | 0.000 | 0.000 | 0.000 | 3 |
+| qwen | 0.000 | 0.000 | 0.000 | 5 |
+| 01-ai | 0.000 | 0.000 | 0.000 | 2 |
+| bigcode | 0.000 | 0.000 | 0.000 | 1 |
+| gemma | 0.000 | 0.000 | 0.000 | 1 |
+| phi | 0.000 | 0.000 | 0.000 | 4 |
+| meta-llama | 0.000 | 0.000 | 0.000 | 5 |
+| ibm-granite | 0.000 | 0.000 | 0.000 | 5 |
+| mistral | 0.000 | 0.000 | 0.000 | 3 |
+| openai | 0.073 | 0.571 | 0.129 | 7 |
 
 ### Figures
 
@@ -160,7 +193,7 @@ Sequence length 128 tokens, base model `huggingface/CodeBERTa-small-v1`; archite
 
 ## Run status
 
-Overall: **failed**, 128 min. Logs are in `results/logs/`.
+Overall: **ok**, 15 min. Logs are in `results/logs/`.
 
 | stage | status | seconds |
 |---|---|---|
@@ -169,13 +202,13 @@ Overall: **failed**, 128 min. Logs are in `results/logs/`.
 | lm_features | skipped | 0 |
 | classical | cached | 0 |
 | train_A_codebert | cached | 0 |
-| train_A_control | ok | 3353 |
-| train_A_gpad | ok | 3525 |
-| train_B_codebert_weighted | failed | 166 |
-| train_B_gpad_entropy_only | failed | 97 |
-| stack | failed | 20 |
-| evaluate | ok | 15 |
-| analyze | ok | 14 |
-| bench | ok | 272 |
+| train_A_control | cached | 0 |
+| train_A_gpad | cached | 0 |
+| train_B_codebert_weighted | ok | 495 |
+| train_B_gpad_entropy_only | ok | 384 |
+| stack | ok | 16 |
+| evaluate | ok | 10 |
+| analyze | ok | 9 |
+| bench | cached | 0 |
 | report | ok | 1 |
 | slides | ok | 1 |

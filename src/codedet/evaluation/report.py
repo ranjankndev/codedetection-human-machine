@@ -289,9 +289,33 @@ def verdict_lines(summary: dict, analysis: dict) -> list[str]:
             out.append(f"**Task B is an imbalance problem.** Always guessing the biggest class gives accuracy "
                        f"{maj['accuracy']:.3f} but macro-F1 {maj['macro_f1']:.3f}; the best model here "
                        f"(`{best[0]}`) reaches macro-F1 {best[1]['macro_f1']:.3f}. Accuracy alone would hide this.")
+        collapsed = collapsed_models(b)
+        if collapsed:
+            names = ", ".join(f"`{m}` ({k} of {b.get('num_labels', '?')} classes)" for m, k in collapsed.items())
+            out.append(f"**The Task B transformers did not learn the task.** {names} predict only a few classes "
+                       f"and score within {COLLAPSE_MARGIN:.2f} macro-F1 of always guessing the biggest class, "
+                       f"so comparisons between them say nothing about the architectures.")
         eo = b.get("paired", {}).get("gpad_entropy_only_vs_codebert_weighted")
-        if eo:
+        if eo and not {"gpad_entropy_only", "codebert_weighted"} & set(collapsed):
             out.append(f"**The old 'entropy-only is best' claim**, re-tested on identical rows: {eo['verdict']}.")
+    return out
+
+
+COLLAPSE_MARGIN = 0.02   # macro-F1 above the majority baseline below which a model "learned nothing"
+
+
+def collapsed_models(task_block: dict, split: str = "id_val") -> dict[str, int]:
+    """Models no better than the majority class on `split`, with how many classes they ever predict."""
+    floor = task_block["models"].get("majority", {}).get("splits", {}).get(split, {}).get("macro_f1")
+    if floor is None:
+        return {}
+    out = {}
+    for m, v in task_block["models"].items():
+        sp = v["splits"].get(split, {})
+        if m in CONSTANT_MODELS or "macro_f1" not in sp or sp["macro_f1"] > floor + COLLAPSE_MARGIN:
+            continue
+        cm = sp.get("confusion_matrix")
+        out[m] = sum(1 for col in zip(*cm) if sum(col) > 0) if cm else 0
     return out
 
 
