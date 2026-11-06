@@ -1,61 +1,61 @@
 {
-  "preset": "local_cpu",
-  "base_model": "hf-internal-testing/tiny-random-RobertaModel",
-  "seq_len": 64,
+  "preset": "local_real",
+  "base_model": "huggingface/CodeBERTa-small-v1",
+  "seq_len": 128,
   "models": {
     "codebert": {
       "model": "codebert",
       "params": {
-        "total_M": 0.09,
-        "trainable_M": 0.09
+        "total_M": 83.68,
+        "trainable_M": 83.68
       },
-      "seq_len": 64,
+      "seq_len": 128,
       "rows": [
         {
           "variant": "fp32",
-          "p50_ms": 20.17390006221831,
-          "p95_ms": 24.445439921692014,
-          "mean_ms": 18.200039956718683,
-          "n": 5,
-          "throughput_per_s": 49.56899741328652,
+          "p50_ms": 357.30170004535466,
+          "p95_ms": 554.8417600221,
+          "mean_ms": 376.57265001907945,
+          "n": 10,
+          "throughput_per_s": 2.798755225270586,
           "batch_size": 1,
-          "seq_len": 64,
+          "seq_len": 128,
           "device": "cpu",
           "precision": "fp32"
         },
         {
           "variant": "fp32",
-          "p50_ms": 23.538699839264154,
-          "p95_ms": 47.47115997597575,
-          "mean_ms": 31.73596002161503,
-          "n": 5,
-          "throughput_per_s": 339.86584028126543,
+          "p50_ms": 2236.432450124994,
+          "p95_ms": 3093.4321700478895,
+          "mean_ms": 2360.410340037197,
+          "n": 10,
+          "throughput_per_s": 3.5771257028366232,
           "batch_size": 8,
-          "seq_len": 64,
+          "seq_len": 128,
           "device": "cpu",
           "precision": "fp32"
         },
         {
           "variant": "int8_dynamic",
-          "p50_ms": 67.80620012432337,
-          "p95_ms": 98.8033399451524,
-          "mean_ms": 72.23180001601577,
-          "n": 5,
-          "throughput_per_s": 14.74791388053732,
+          "p50_ms": 138.24845000635833,
+          "p95_ms": 331.7584298667495,
+          "mean_ms": 171.48423995822668,
+          "n": 10,
+          "throughput_per_s": 7.2333541530050285,
           "batch_size": 1,
-          "seq_len": 64,
+          "seq_len": 128,
           "device": "cpu",
           "precision": "fp32"
         },
         {
           "variant": "int8_dynamic",
-          "p50_ms": 127.18939990736544,
-          "p95_ms": 189.031479973346,
-          "mean_ms": 129.6674999408424,
-          "n": 5,
-          "throughput_per_s": 62.89832333375705,
+          "p50_ms": 797.472850070335,
+          "p95_ms": 1942.9514950024893,
+          "mean_ms": 963.5085999965668,
+          "n": 10,
+          "throughput_per_s": 10.031689479202234,
           "batch_size": 8,
-          "seq_len": 64,
+          "seq_len": 128,
           "device": "cpu",
           "precision": "fp32"
         }
@@ -64,64 +64,64 @@
         "model": "codebert",
         "with_lm_features": false,
         "params": {
-          "total_M": 0.09,
-          "trainable_M": 0.09
+          "total_M": 83.68,
+          "trainable_M": 83.68
         }
       }
     },
     "control": {
       "model": "control",
       "params": {
-        "total_M": 0.1,
-        "trainable_M": 0.1
+        "total_M": 90.77,
+        "trainable_M": 90.77
       },
-      "seq_len": 64,
+      "seq_len": 128,
       "rows": [
         {
           "variant": "fp32",
-          "p50_ms": 19.85789998434484,
-          "p95_ms": 26.52540015988052,
-          "mean_ms": 20.555440057069063,
-          "n": 5,
-          "throughput_per_s": 50.35779215266263,
+          "p50_ms": 333.10305001214147,
+          "p95_ms": 408.806710015051,
+          "mean_ms": 344.3331500282511,
+          "n": 10,
+          "throughput_per_s": 3.0020739827016008,
           "batch_size": 1,
-          "seq_len": 64,
+          "seq_len": 128,
           "device": "cpu",
           "precision": "fp32"
         },
         {
           "variant": "fp32",
-          "p50_ms": 28.765000170096755,
-          "p95_ms": 44.65928012505174,
-          "mean_ms": 29.34602010063827,
-          "n": 5,
-          "throughput_per_s": 278.1157640428789,
+          "p50_ms": 1804.7247499926016,
+          "p95_ms": 2439.279244933277,
+          "mean_ms": 1930.290549993515,
+          "n": 10,
+          "throughput_per_s": 4.432808936671809,
           "batch_size": 8,
-          "seq_len": 64,
+          "seq_len": 128,
           "device": "cpu",
           "precision": "fp32"
         },
         {
           "variant": "int8_dynamic",
-          "p50_ms": 69.48780012317002,
-          "p95_ms": 105.96747994422913,
-          "mean_ms": 71.05728010646999,
-          "n": 5,
-          "throughput_per_s": 14.391015375756009,
+          "p50_ms": 168.1414000922814,
+          "p95_ms": 283.9788699522613,
+          "mean_ms": 176.05290999636054,
+          "n": 10,
+          "throughput_per_s": 5.947375241619065,
           "batch_size": 1,
-          "seq_len": 64,
+          "seq_len": 128,
           "device": "cpu",
           "precision": "fp32"
         },
         {
           "variant": "int8_dynamic",
-          "p50_ms": 101.32989985868335,
-          "p95_ms": 167.81969997100532,
-          "mean_ms": 115.11033996939659,
-          "n": 5,
-          "throughput_per_s": 78.95004348328534,
+          "p50_ms": 696.2433999869972,
+          "p95_ms": 2234.453045157713,
+          "mean_ms": 955.3432400338352,
+          "n": 10,
+          "throughput_per_s": 11.490234593461718,
           "batch_size": 8,
-          "seq_len": 64,
+          "seq_len": 128,
           "device": "cpu",
           "precision": "fp32"
         }
@@ -130,64 +130,64 @@
         "model": "control",
         "with_lm_features": false,
         "params": {
-          "total_M": 0.1,
-          "trainable_M": 0.1
+          "total_M": 90.77,
+          "trainable_M": 90.77
         }
       }
     },
     "gpad": {
       "model": "gpad",
       "params": {
-        "total_M": 0.1,
-        "trainable_M": 0.1
+        "total_M": 91.42,
+        "trainable_M": 91.42
       },
-      "seq_len": 64,
+      "seq_len": 128,
       "rows": [
         {
           "variant": "fp32",
-          "p50_ms": 92.93060004711151,
-          "p95_ms": 106.37112008407712,
-          "mean_ms": 74.29177998565137,
-          "n": 5,
-          "throughput_per_s": 10.760718207921247,
+          "p50_ms": 327.61420006863773,
+          "p95_ms": 661.7270650807767,
+          "mean_ms": 384.7635700367391,
+          "n": 10,
+          "throughput_per_s": 3.0523707451950868,
           "batch_size": 1,
-          "seq_len": 64,
+          "seq_len": 128,
           "device": "cpu",
           "precision": "fp32"
         },
         {
           "variant": "fp32",
-          "p50_ms": 33.52990001440048,
-          "p95_ms": 55.909880017861724,
-          "mean_ms": 40.24633998051286,
-          "n": 5,
-          "throughput_per_s": 238.59301687640422,
+          "p50_ms": 2594.334250083193,
+          "p95_ms": 3879.5153250917792,
+          "mean_ms": 2783.483780035749,
+          "n": 10,
+          "throughput_per_s": 3.083642749481283,
           "batch_size": 8,
-          "seq_len": 64,
+          "seq_len": 128,
           "device": "cpu",
           "precision": "fp32"
         },
         {
           "variant": "int8_dynamic",
-          "p50_ms": 566.4194000419229,
-          "p95_ms": 581.6651999484748,
-          "mean_ms": 457.9952799715102,
-          "n": 5,
-          "throughput_per_s": 1.7654762529778925,
+          "p50_ms": 169.18035002890974,
+          "p95_ms": 394.4802250480277,
+          "mean_ms": 207.25271003320813,
+          "n": 10,
+          "throughput_per_s": 5.9108519389463305,
           "batch_size": 1,
-          "seq_len": 64,
+          "seq_len": 128,
           "device": "cpu",
           "precision": "fp32"
         },
         {
           "variant": "int8_dynamic",
-          "p50_ms": 191.39870000071824,
-          "p95_ms": 256.5118200611323,
-          "mean_ms": 184.00735999457538,
-          "n": 5,
-          "throughput_per_s": 41.797567067958035,
+          "p50_ms": 1167.349150055088,
+          "p95_ms": 1731.0177449602634,
+          "mean_ms": 1192.1914899954572,
+          "n": 10,
+          "throughput_per_s": 6.853133871406403,
           "batch_size": 8,
-          "seq_len": 64,
+          "seq_len": 128,
           "device": "cpu",
           "precision": "fp32"
         }
@@ -196,40 +196,40 @@
         "model": "gpad",
         "with_lm_features": false,
         "params": {
-          "total_M": 0.1,
-          "trainable_M": 0.1
+          "total_M": 91.42,
+          "trainable_M": 91.42
         }
       }
     },
     "lora": {
       "model": "lora",
       "params": {
-        "total_M": 0.09,
-        "trainable_M": 0.01
+        "total_M": 83.83,
+        "trainable_M": 0.38
       },
-      "seq_len": 64,
+      "seq_len": 128,
       "rows": [
         {
           "variant": "fp32",
-          "p50_ms": 17.16140005737543,
-          "p95_ms": 20.211600000038743,
-          "mean_ms": 17.195819970220327,
-          "n": 5,
-          "throughput_per_s": 58.270304092714824,
+          "p50_ms": 466.70665009878576,
+          "p95_ms": 617.0790150412358,
+          "mean_ms": 445.18548001069576,
+          "n": 10,
+          "throughput_per_s": 2.1426735611938126,
           "batch_size": 1,
-          "seq_len": 64,
+          "seq_len": 128,
           "device": "cpu",
           "precision": "fp32"
         },
         {
           "variant": "fp32",
-          "p50_ms": 24.448700016364455,
-          "p95_ms": 67.93660004623233,
-          "mean_ms": 34.37446001917124,
-          "n": 5,
-          "throughput_per_s": 327.2157617642366,
+          "p50_ms": 1461.337500018999,
+          "p95_ms": 2330.513234913814,
+          "mean_ms": 1660.103840008378,
+          "n": 10,
+          "throughput_per_s": 5.474436945535163,
           "batch_size": 8,
-          "seq_len": 64,
+          "seq_len": 128,
           "device": "cpu",
           "precision": "fp32"
         },
@@ -250,14 +250,14 @@
           ],
           "backend": "peft",
           "params": {
-            "total_M": 0.09,
-            "trainable_M": 0.01
+            "total_M": 83.83,
+            "trainable_M": 0.38
           },
-          "encoder_trainable_M": 0.0051
+          "encoder_trainable_M": 0.1475
         },
         "params": {
-          "total_M": 0.09,
-          "trainable_M": 0.01
+          "total_M": 83.83,
+          "trainable_M": 0.38
         }
       }
     }

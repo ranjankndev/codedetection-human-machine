@@ -17,7 +17,7 @@
 The "entropy" in GPAD is **not** token-level predictive entropy. It is the entropy of a learned softmax
 over key self-similarity, turned into an additive per-key bias on pre-softmax attention scores:
 `score_qk += sign · α · σ(mean(H) − H_k)`. With `sign=+1` low-entropy keys are boosted. True predictive
-entropy is a separate, explicitly named feature set (`codedet/lm_features.py`).
+entropy is a separate, explicitly named feature set (`codedet/features/lm.py`).
 
 ## Intended use
 
@@ -57,7 +57,7 @@ before and after temperature scaling, and the operating point under a 5:1 false-
 Model-vs-model claims use a paired bootstrap on identical rows plus McNemar; differences whose interval
 contains zero are reported as ties.
 
-Current numbers: `results/summary.md` (generated). If that file is absent, the run has not been executed
+Current numbers: `results/REPORT.md` (generated). If that file is absent, the run has not been executed
 in this checkout — no numbers are quoted anywhere by hand.
 
 ## Ethical considerations

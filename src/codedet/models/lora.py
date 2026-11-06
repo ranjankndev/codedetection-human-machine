@@ -14,7 +14,7 @@ import math
 import torch
 import torch.nn as nn
 
-from .gpad import GPADClassifier, GPADConfig, count_params
+from codedet.models.gpad import GPADClassifier, GPADConfig, count_params
 
 TARGET_MODULES = ("query", "value")
 

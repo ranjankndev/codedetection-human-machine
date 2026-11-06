@@ -1,126 +1,180 @@
 {
-  "root": "fixtures",
+  "root": "data",
   "files": {
-    "fixtures\\task_a.parquet": {
-      "rows": 600,
+    "data\\task_a\\task_a_training_set_1.parquet": {
+      "rows": 500000,
       "columns": [
         "code",
-        "label",
-        "language",
         "generator",
-        "domain"
+        "label",
+        "language"
       ]
     },
-    "fixtures\\task_b.parquet": {
-      "rows": 600,
+    "data\\task_a\\task_a_validation_set.parquet": {
+      "rows": 100000,
       "columns": [
         "code",
-        "label",
-        "language",
         "generator",
-        "domain"
+        "label",
+        "language"
+      ]
+    },
+    "data\\task_b\\task_b_training_set.parquet": {
+      "rows": 500000,
+      "columns": [
+        "code",
+        "generator",
+        "label",
+        "language"
+      ]
+    },
+    "data\\task_b\\task_b_validation_set.parquet": {
+      "rows": 100000,
+      "columns": [
+        "code",
+        "generator",
+        "label",
+        "language"
       ]
     }
   },
   "tasks": {
     "A": {
       "candidates": [
-        "fixtures\\task_a.parquet"
+        "data\\task_a\\task_a_training_set_1.parquet"
       ],
       "label_map": null,
       "columns": [
         "code",
-        "label",
-        "language",
         "generator",
-        "domain"
+        "label",
+        "language"
       ],
       "summary": {
-        "name": "task_a.parquet",
-        "rows": 600,
+        "name": "task_a_training_set_1.parquet",
+        "rows": 2000,
         "label_counts": {
-          "1": 302,
-          "0": 298
+          "1": 1072,
+          "0": 928
         },
         "language_counts": {
-          "Python": 200,
-          "Java": 200,
-          "C++": 200
+          "Python": 1857,
+          "Java": 80,
+          "C++": 63
         },
         "generator_counts": {
-          "Human": 298,
-          "bigcode/starcoder2-3b": 30,
-          "deepseek-ai/deepseek-coder-1.3b": 29,
-          "mistralai/Codestral-22B": 28,
-          "Qwen/Qwen2.5-Coder-1.5B": 27,
-          "mistralai/Mistral-7B": 27,
-          "gpt-4.1-mini": 26,
-          "meta-llama/CodeLlama-13b": 25,
-          "deepseek-ai/deepseek-coder-6.7b": 24,
-          "bigcode/starcoder2-7b": 24,
-          "meta-llama/CodeLlama-7b": 21,
-          "Qwen/Qwen2.5-Coder-7B": 21,
-          "gpt-4o-mini": 20
-        },
-        "domain_counts": {
-          "algorithmic": 600
+          "human": 928,
+          "microsoft/Phi-3-medium-4k-instruct": 66,
+          "bigcode/starcoder2-3b": 50,
+          "microsoft/phi-2": 46,
+          "Qwen/Qwen2.5-Coder-1.5B-Instruct": 46,
+          "meta-llama/Llama-3.3-70B-Instruct": 45,
+          "01-ai/Yi-Coder-9B": 41,
+          "codellama/CodeLlama-70b-Instruct-hf": 39,
+          "meta-llama/Llama-3.1-8B-Instruct": 39,
+          "bigcode/starcoder2-7b": 36,
+          "microsoft/Phi-3.5-mini-instruct": 35,
+          "bigcode/starcoder2-15b": 35,
+          "microsoft/Phi-3-mini-4k-instruct": 34,
+          "bigcode/starcoder": 34,
+          "google/codegemma-2b": 33,
+          "codellama/CodeLlama-34b-Instruct-hf": 33,
+          "Qwen/Qwen2.5-Coder-7B": 33,
+          "microsoft/Phi-3-small-8k-instruct": 32,
+          "01-ai/Yi-Coder-9B-Chat": 31,
+          "deepseek-ai/deepseek-coder-6.7b-base": 30,
+          "Qwen/Qwen2.5-Coder-7B-Instruct": 29,
+          "meta-llama/Llama-3.2-3B": 29,
+          "01-ai/Yi-Coder-1.5B": 28,
+          "Qwen/Qwen2.5-Coder-32B-Instruct": 27,
+          "meta-llama/Llama-3.1-8B": 27,
+          "ibm-granite/granite-8b-code-base-4k": 26,
+          "01-ai/Yi-Coder-1.5B-Chat": 26,
+          "Qwen/Qwen2.5-Coder-1.5B": 22,
+          "deepseek-ai/deepseek-coder-1.3b-base": 21,
+          "deepseek-ai/deepseek-coder-6.7b-instruct": 21
         }
       },
       "code_chars": {
-        "mean": 203.21,
-        "p50": 222.5,
-        "p95": 347.0,
-        "max": 348
+        "mean": 821.8495,
+        "p50": 454.0,
+        "p95": 2653.1499999999996,
+        "max": 23745
       }
     },
     "B": {
       "candidates": [
-        "fixtures\\task_b.parquet"
+        "data\\task_b\\task_b_training_set.parquet"
       ],
       "label_map": null,
       "columns": [
         "code",
-        "label",
-        "language",
         "generator",
-        "domain"
+        "label",
+        "language"
       ],
       "summary": {
-        "name": "task_b.parquet",
-        "rows": 600,
+        "name": "task_b_training_set.parquet",
+        "rows": 2000,
         "label_counts": {
-          "1": 309,
-          "0": 291
+          "0": 1770,
+          "10": 39,
+          "8": 38,
+          "7": 37,
+          "2": 37,
+          "6": 27,
+          "3": 14,
+          "9": 14,
+          "1": 13,
+          "4": 6,
+          "5": 5
         },
         "language_counts": {
-          "Python": 200,
-          "Java": 200,
-          "C++": 200
+          "Python": 575,
+          "Java": 542,
+          "C#": 249,
+          "JavaScript": 155,
+          "C++": 140,
+          "Go": 126,
+          "PHP": 120,
+          "C": 93
         },
         "generator_counts": {
-          "Human": 291,
-          "gpt-4.1-mini": 36,
-          "meta-llama/CodeLlama-13b": 33,
-          "mistralai/Codestral-22B": 29,
-          "Qwen/Qwen2.5-Coder-1.5B": 29,
-          "bigcode/starcoder2-3b": 26,
-          "deepseek-ai/deepseek-coder-6.7b": 26,
-          "bigcode/starcoder2-7b": 24,
-          "meta-llama/CodeLlama-7b": 23,
-          "deepseek-ai/deepseek-coder-1.3b": 22,
-          "gpt-4o-mini": 22,
-          "Qwen/Qwen2.5-Coder-7B": 20,
-          "mistralai/Mistral-7B": 19
-        },
-        "domain_counts": {
-          "algorithmic": 600
+          "Human": 1770,
+          "GPT-4o": 39,
+          "ibm-granite/granite-3.2-2b-instruct": 21,
+          "meta-llama/Llama-3.1-8B-Instruct": 17,
+          "01-ai/Yi-Coder-1.5B-Chat": 13,
+          "ibm-granite/granite-3.3-8b-instruct": 13,
+          "Qwen/Qwen2.5-Coder-1.5B-Instruct": 13,
+          "microsoft/Phi-3-medium-4k-instruct": 13,
+          "deepseek-ai/DeepSeek-V3-0324": 11,
+          "meta-llama/Llama-3.2-11B-Vision-Instruct": 9,
+          "Qwen/Qwen2.5-Coder-1.5B": 9,
+          "microsoft/Phi-3-small-8k-instruct": 8,
+          "mistralai/Mistral-7B-Instruct-v0.3": 8,
+          "Qwen/Qwen2.5-Codder-14B-Instruct": 8,
+          "meta-llama/Llama-3.2-3B": 7,
+          "Qwen/Qwen2.5-72B-Instruct": 7,
+          "mistralai/Devstral-Small-2505": 6,
+          "microsoft/Phi-3-mini-4k-instruct": 6,
+          "gemma-3-27b-it": 4,
+          "ibm-granite/granite-3.3-8b-base": 4,
+          "meta-llama/Llama-3.1-8B": 4,
+          "bigcode/starcoder2-15b": 3,
+          "bigcode/starcoder": 2,
+          "deepseek-ai/DeepSeek-R1": 1,
+          "deepseek-ai/deepseek-coder-1.3b-base": 1,
+          "bigcode/starcoder2-3b": 1,
+          "gemma-3n-e4b-it": 1,
+          "01-ai/Yi-Coder-1.5B": 1
         }
       },
       "code_chars": {
-        "mean": 205.28666666666666,
-        "p50": 227.0,
-        "p95": 347.0,
-        "max": 348
+        "mean": 1365.196,
+        "p50": 809.0,
+        "p95": 4481.45,
+        "max": 14876
       }
     }
   }

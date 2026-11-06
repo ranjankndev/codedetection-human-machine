@@ -20,7 +20,7 @@ from pathlib import Path
 
 import numpy as np
 
-from codedet.features import STYLE_NAMES, StyleScaler, style_matrix
+from codedet.features.style import STYLE_NAMES, StyleScaler, style_matrix
 
 LABELS = ("human", "machine")
 MIN_CHARS, MAX_CHARS = 80, 20000
@@ -82,7 +82,7 @@ class Detector:
             return score, info
         import torch
 
-        from codedet.inference import predict_texts
+        from codedet.models.inference import predict_texts
 
         probs, logits = predict_texts(self.model, self.tokenizer, [code], scaler=self.scaler,
                                       temperature=self.temperature, device="cpu")

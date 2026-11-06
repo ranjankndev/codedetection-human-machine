@@ -2,7 +2,7 @@
 
     python scripts/make_slides.py --out results --deck docs/codedet_slides.pptx
 
-Structure follows `docs/slides_update.md`: the original story, plus the three slides the rebuild earned
+Structure follows `docs/dev/slides_update.md`: the original story, plus the three slides the rebuild earned
 (audit & fixes, controlled ablation with CIs, shortcut learning & calibration). Figures come from
 `results/figures/`; tables come from `results/summary.json` and `results/analysis.json`.
 
@@ -14,7 +14,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from codedet.report import eval_splits, fmt_ci, label, split_label
+from codedet.evaluation.report import eval_splits, fmt_ci, label, split_label
 from codedet.utils import get_logger, read_json
 
 log = get_logger("slides")
@@ -191,7 +191,7 @@ def build(out: Path, deck: Path) -> Path:
         "  unseen language 0.5676 -> 0.7268; unseen/unseen 0.5606 -> 0.6538",
         "Task B macro-F1: 0.29 baseline, 0.34 entropy-only, 0.20 style-only",
         "Measured before the fixes on the audit slide: different row counts, no control, no CIs",
-        "Kept here for honesty, not comparison - see docs/ORIGINAL_RESULTS.md",
+        "Kept here for honesty, not comparison - see docs/dev/ORIGINAL_RESULTS.md",
     ])
 
     # 11 next
@@ -217,7 +217,7 @@ def main() -> int:
     a = ap.parse_args()
     out = Path(a.out)
     if not (out / "summary.json").exists():
-        log.warning("no summary.json; run scripts/evaluate.py first")
+        log.warning("no summary.json; run scripts/stages/evaluate.py first")
         return 0
     try:
         deck = build(out, Path(a.deck))

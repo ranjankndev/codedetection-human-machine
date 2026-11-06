@@ -4,11 +4,11 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from codedet.artifacts import load_preds, probs_as_logits, save_preds
-from codedet.classical import ClassicalModel, length_matrix, permutation_importance_gbdt, top_ngrams
-from codedet.eval import macro_f1_fast, softmax
-from codedet.fixtures import make_fixture
-from codedet.perturb import normalize_whitespace, strip_and_normalize, strip_comments
+from codedet.evaluation.artifacts import load_preds, probs_as_logits, save_preds
+from codedet.models.classical import ClassicalModel, length_matrix, permutation_importance_gbdt, top_ngrams
+from codedet.evaluation.metrics import macro_f1_fast, softmax
+from codedet.data.fixtures import make_fixture
+from codedet.data.perturb import normalize_whitespace, strip_and_normalize, strip_comments
 
 
 @pytest.fixture

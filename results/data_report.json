@@ -1,282 +1,571 @@
 {
   "A": {
     "task": "A",
-    "preset": "local_cpu",
+    "preset": "local_real",
     "seed": 42,
     "source_files": [
-      "fixtures\\task_a.parquet"
+      "data\\task_a\\task_a_training_set_1.parquet"
     ],
-    "rows_total": 600,
+    "rows_total": 500000,
     "label_names": [
       "human",
       "machine"
     ],
     "num_labels": 2,
     "sizes": {
-      "train": 115,
-      "id_val": 40,
-      "ood_lang": 40
+      "train": 500,
+      "id_val": 300,
+      "ood_lang": 300,
+      "official_val": 300
     },
     "dedup": {
       "exact_removed": 0,
-      "near_dup_removed": 45
+      "near_dup_removed": 0
     },
     "notes": {
+      "missing_domain": true,
       "label_vs_generator_agreement": 1.0,
       "languages_available": [
         "C++",
         "Java",
         "Python"
       ],
-      "holdout_language": "Java"
+      "holdout_language": "Java",
+      "official_val_files": [
+        "data\\task_a\\task_a_validation_set.parquet"
+      ]
     },
     "splits": {
       "train": {
         "name": "train",
-        "rows": 115,
+        "rows": 500,
         "label_counts": {
-          "0": 79,
-          "1": 36
+          "1": 261,
+          "0": 239
         },
         "language_counts": {
-          "Python": 72,
-          "C++": 43
+          "Python": 476,
+          "C++": 24
         },
         "generator_counts": {
-          "Human": 79,
-          "deepseek-ai/deepseek-coder-1.3b": 5,
-          "meta-llama/CodeLlama-13b": 5,
-          "gpt-4.1-mini": 4,
-          "bigcode/starcoder2-3b": 4,
-          "Qwen/Qwen2.5-Coder-7B": 4,
-          "deepseek-ai/deepseek-coder-6.7b": 3,
-          "mistralai/Codestral-22B": 3,
-          "mistralai/Mistral-7B": 2,
-          "gpt-4o-mini": 2,
-          "bigcode/starcoder2-7b": 2,
-          "meta-llama/CodeLlama-7b": 1,
-          "Qwen/Qwen2.5-Coder-1.5B": 1
+          "human": 239,
+          "01-ai/Yi-Coder-9B": 14,
+          "codellama/CodeLlama-70b-Instruct-hf": 13,
+          "meta-llama/Llama-3.3-70B-Instruct": 13,
+          "microsoft/Phi-3-medium-4k-instruct": 12,
+          "microsoft/Phi-3-mini-4k-instruct": 12,
+          "Qwen/Qwen2.5-Coder-7B": 11,
+          "codellama/CodeLlama-7b-hf": 11,
+          "bigcode/starcoder2-3b": 10,
+          "bigcode/starcoder": 10,
+          "deepseek-ai/deepseek-coder-6.7b-instruct": 10,
+          "01-ai/Yi-Coder-9B-Chat": 10,
+          "google/codegemma-2b": 9,
+          "deepseek-ai/deepseek-coder-1.3b-base": 8,
+          "microsoft/phi-2": 8,
+          "deepseek-ai/deepseek-coder-6.7b-base": 8,
+          "bigcode/starcoder2-15b": 8,
+          "microsoft/Phi-3.5-mini-instruct": 8,
+          "Qwen/Qwen2.5-Coder-7B-Instruct": 7,
+          "Qwen/Qwen2.5-Coder-1.5B-Instruct": 7,
+          "meta-llama/Llama-3.1-8B-Instruct": 7,
+          "codellama/CodeLlama-34b-Instruct-hf": 7,
+          "microsoft/Phi-3-small-8k-instruct": 6,
+          "google/codegemma-7b": 6,
+          "meta-llama/Llama-3.1-8B": 6,
+          "01-ai/Yi-Coder-1.5B-Chat": 6,
+          "Qwen/Qwen2.5-Coder-32B-Instruct": 6,
+          "01-ai/Yi-Coder-1.5B": 6,
+          "meta-llama/Llama-3.2-3B": 5,
+          "Qwen/Qwen2.5-Coder-1.5B": 4
         },
         "family_counts": {
-          "human": 79,
-          "deepseek": 8,
-          "meta-llama": 6,
-          "openai": 6,
-          "bigcode": 6,
-          "mistral": 5,
-          "qwen": 5
+          "human": 239,
+          "phi": 46,
+          "01-ai": 36,
+          "qwen": 35,
+          "meta-llama": 34,
+          "codellama": 31,
+          "bigcode": 31,
+          "deepseek": 28,
+          "gemma": 15,
+          "ibm-granite": 5
         },
         "domain_counts": {
-          "algorithmic": 115
+          "unknown": 500
         }
       },
       "id_val": {
         "name": "id_val",
-        "rows": 40,
+        "rows": 300,
         "label_counts": {
-          "1": 20,
-          "0": 20
+          "1": 157,
+          "0": 143
         },
         "language_counts": {
-          "C++": 20,
-          "Python": 20
+          "Python": 285,
+          "C++": 15
         },
         "generator_counts": {
-          "Human": 20,
-          "deepseek-ai/deepseek-coder-1.3b": 5,
-          "bigcode/starcoder2-3b": 3,
-          "meta-llama/CodeLlama-7b": 2,
-          "bigcode/starcoder2-7b": 2,
-          "gpt-4.1-mini": 2,
-          "gpt-4o-mini": 2,
-          "mistralai/Mistral-7B": 1,
-          "mistralai/Codestral-22B": 1,
-          "Qwen/Qwen2.5-Coder-7B": 1,
-          "Qwen/Qwen2.5-Coder-1.5B": 1
+          "human": 143,
+          "microsoft/phi-2": 11,
+          "01-ai/Yi-Coder-9B-Chat": 10,
+          "bigcode/starcoder2-15b": 9,
+          "microsoft/Phi-3-medium-4k-instruct": 7,
+          "google/codegemma-7b": 7,
+          "codellama/CodeLlama-70b-Instruct-hf": 6,
+          "01-ai/Yi-Coder-9B": 6,
+          "Qwen/Qwen2.5-Coder-1.5B": 5,
+          "Qwen/Qwen2.5-Coder-1.5B-Instruct": 5,
+          "bigcode/starcoder2-7b": 5,
+          "bigcode/starcoder2-3b": 5,
+          "deepseek-ai/deepseek-coder-1.3b-base": 5,
+          "microsoft/Phi-3.5-mini-instruct": 5,
+          "ibm-granite/granite-8b-code-instruct-4k": 5,
+          "bigcode/starcoder": 5,
+          "01-ai/Yi-Coder-1.5B": 5,
+          "meta-llama/Llama-3.3-70B-Instruct": 4,
+          "deepseek-ai/deepseek-coder-6.7b-base": 4,
+          "Qwen/Qwen2.5-Coder-7B": 4,
+          "google/codegemma-2b": 4,
+          "ibm-granite/granite-8b-code-base-4k": 4,
+          "Qwen/Qwen2.5-Coder-32B-Instruct": 4,
+          "deepseek-ai/deepseek-coder-6.7b-instruct": 3,
+          "01-ai/Yi-Coder-1.5B-Chat": 3,
+          "microsoft/Phi-3-small-8k-instruct": 3,
+          "microsoft/Phi-3-mini-4k-instruct": 3,
+          "deepseek-ai/deepseek-coder-1.3b-instruct": 3,
+          "codellama/CodeLlama-7b-hf": 3,
+          "codellama/CodeLlama-34b-Instruct-hf": 3
         },
         "family_counts": {
-          "human": 20,
-          "bigcode": 5,
-          "deepseek": 5,
-          "openai": 4,
-          "meta-llama": 2,
-          "mistral": 2,
-          "qwen": 2
+          "human": 143,
+          "phi": 29,
+          "bigcode": 24,
+          "01-ai": 24,
+          "qwen": 20,
+          "deepseek": 15,
+          "meta-llama": 13,
+          "codellama": 12,
+          "gemma": 11,
+          "ibm-granite": 9
         },
         "domain_counts": {
-          "algorithmic": 40
+          "unknown": 300
         }
       },
       "ood_lang": {
         "name": "ood_lang",
-        "rows": 40,
+        "rows": 300,
         "label_counts": {
-          "1": 21,
-          "0": 19
+          "1": 157,
+          "0": 143
         },
         "language_counts": {
-          "Java": 40
+          "Java": 300
         },
         "generator_counts": {
-          "Human": 19,
-          "bigcode/starcoder2-3b": 4,
-          "Qwen/Qwen2.5-Coder-1.5B": 3,
-          "gpt-4.1-mini": 3,
-          "mistralai/Mistral-7B": 3,
-          "bigcode/starcoder2-7b": 2,
-          "mistralai/Codestral-22B": 2,
-          "deepseek-ai/deepseek-coder-1.3b": 1,
-          "deepseek-ai/deepseek-coder-6.7b": 1,
-          "Qwen/Qwen2.5-Coder-7B": 1,
-          "gpt-4o-mini": 1
+          "human": 143,
+          "microsoft/Phi-3-medium-4k-instruct": 11,
+          "meta-llama/Llama-3.1-8B-Instruct": 11,
+          "bigcode/starcoder": 8,
+          "codellama/CodeLlama-70b-Instruct-hf": 7,
+          "01-ai/Yi-Coder-9B-Chat": 7,
+          "microsoft/phi-2": 7,
+          "01-ai/Yi-Coder-9B": 6,
+          "microsoft/Phi-3.5-mini-instruct": 6,
+          "meta-llama/Llama-3.1-8B": 6,
+          "deepseek-ai/deepseek-coder-1.3b-base": 6,
+          "Qwen/Qwen2.5-Coder-1.5B-Instruct": 6,
+          "google/codegemma-2b": 6,
+          "meta-llama/Llama-3.3-70B-Instruct": 6,
+          "deepseek-ai/deepseek-coder-6.7b-instruct": 5,
+          "bigcode/starcoder2-3b": 5,
+          "Qwen/Qwen2.5-Coder-7B": 5,
+          "microsoft/Phi-3-small-8k-instruct": 5,
+          "codellama/CodeLlama-34b-Instruct-hf": 5,
+          "meta-llama/Llama-3.2-1B": 4,
+          "Qwen/Qwen2.5-Coder-1.5B": 4,
+          "meta-llama/Llama-3.2-3B": 4,
+          "01-ai/Yi-Coder-1.5B-Chat": 4,
+          "bigcode/starcoder2-7b": 3,
+          "01-ai/Yi-Coder-1.5B": 3,
+          "Qwen/Qwen2.5-Coder-32B-Instruct": 2,
+          "Qwen/Qwen2.5-Coder-7B-Instruct": 2,
+          "ibm-granite/granite-8b-code-base-4k": 2,
+          "microsoft/Phi-3-mini-4k-instruct": 2,
+          "ibm-granite/granite-8b-code-instruct-4k": 2
         },
         "family_counts": {
-          "human": 19,
-          "bigcode": 6,
-          "mistral": 5,
-          "qwen": 4,
-          "openai": 4,
-          "deepseek": 2
+          "human": 143,
+          "phi": 31,
+          "meta-llama": 31,
+          "01-ai": 20,
+          "qwen": 19,
+          "bigcode": 18,
+          "codellama": 14,
+          "deepseek": 13,
+          "gemma": 7,
+          "ibm-granite": 4
         },
         "domain_counts": {
-          "algorithmic": 40
+          "unknown": 300
+        }
+      },
+      "official_val": {
+        "name": "official_val",
+        "rows": 300,
+        "label_counts": {
+          "1": 157,
+          "0": 143
+        },
+        "language_counts": {
+          "Python": 280,
+          "Java": 13,
+          "C++": 7
+        },
+        "generator_counts": {
+          "human": 143,
+          "microsoft/phi-2": 14,
+          "Qwen/Qwen2.5-Coder-7B": 10,
+          "microsoft/Phi-3-medium-4k-instruct": 8,
+          "meta-llama/Llama-3.1-8B-Instruct": 7,
+          "meta-llama/Llama-3.3-70B-Instruct": 6,
+          "Qwen/Qwen2.5-Coder-32B-Instruct": 6,
+          "google/codegemma-2b": 6,
+          "codellama/CodeLlama-7b-hf": 6,
+          "microsoft/Phi-3.5-mini-instruct": 6,
+          "01-ai/Yi-Coder-1.5B-Chat": 6,
+          "microsoft/Phi-3-mini-4k-instruct": 6,
+          "meta-llama/Llama-3.2-3B": 5,
+          "01-ai/Yi-Coder-1.5B": 5,
+          "bigcode/starcoder2-7b": 4,
+          "bigcode/starcoder2-15b": 4,
+          "codellama/CodeLlama-34b-Instruct-hf": 4,
+          "Qwen/Qwen2.5-Coder-1.5B-Instruct": 4,
+          "ibm-granite/granite-8b-code-instruct-4k": 4,
+          "bigcode/starcoder": 4,
+          "microsoft/Phi-3-small-8k-instruct": 4,
+          "deepseek-ai/deepseek-coder-1.3b-base": 4,
+          "codellama/CodeLlama-70b-Instruct-hf": 4,
+          "Qwen/Qwen2.5-Coder-1.5B": 4,
+          "Qwen/Qwen2.5-Coder-7B-Instruct": 3,
+          "meta-llama/Llama-3.1-8B": 3,
+          "deepseek-ai/deepseek-coder-1.3b-instruct": 3,
+          "bigcode/starcoder2-3b": 3,
+          "01-ai/Yi-Coder-9B": 3,
+          "google/codegemma-7b": 3
+        },
+        "family_counts": {
+          "human": 143,
+          "phi": 38,
+          "qwen": 27,
+          "meta-llama": 22,
+          "01-ai": 16,
+          "bigcode": 15,
+          "codellama": 14,
+          "deepseek": 10,
+          "gemma": 9,
+          "ibm-granite": 6
+        },
+        "domain_counts": {
+          "unknown": 300
         }
       }
     }
   },
   "B": {
     "task": "B",
-    "preset": "local_cpu",
+    "preset": "local_real",
     "seed": 42,
     "source_files": [
-      "fixtures\\task_b.parquet"
+      "data\\task_b\\task_b_training_set.parquet"
     ],
-    "rows_total": 600,
+    "rows_total": 500000,
     "label_names": [
       "human",
       "deepseek",
       "qwen",
+      "01-ai",
       "bigcode",
+      "gemma",
+      "phi",
       "meta-llama",
+      "ibm-granite",
       "mistral",
       "openai"
     ],
-    "num_labels": 7,
+    "num_labels": 11,
     "sizes": {
-      "train": 101,
-      "id_val": 40,
-      "ood_gen": 40
+      "train": 501,
+      "id_val": 300,
+      "ood_gen": 300,
+      "official_val": 299
     },
     "dedup": {
       "exact_removed": 0,
-      "near_dup_removed": 59
+      "near_dup_removed": 0
     },
     "notes": {
+      "missing_domain": true,
       "holdout_generators": [
-        "bigcode/starcoder2-3b"
+        "meta-llama/Llama-3.1-8B",
+        "Qwen/Qwen2.5-Coder-1.5B",
+        "bigcode/starcoder2-15b"
       ],
-      "human_rows_train_before_cap": 77,
-      "human_rows_train_after_cap": 77,
-      "human_cap": 0.5
+      "train_composition": {
+        "machine_rows": 301,
+        "human_rows": 201,
+        "families_in_train": 10
+      },
+      "human_cap": 0.4,
+      "official_val_rows_dropped_unknown_family": 0,
+      "official_val_files": [
+        "data\\task_b\\task_b_validation_set.parquet"
+      ],
+      "human_rows_train_before_cap": 201,
+      "human_rows_train_after_cap": 200,
+      "human_share_train": 0.3992
     },
     "splits": {
       "train": {
         "name": "train",
-        "rows": 101,
+        "rows": 501,
         "label_counts": {
-          "0": 77,
-          "1": 24
+          "0": 200,
+          "10": 60,
+          "8": 45,
+          "2": 41,
+          "7": 39,
+          "6": 32,
+          "9": 26,
+          "1": 23,
+          "3": 17,
+          "5": 11,
+          "4": 7
         },
         "language_counts": {
-          "Python": 49,
-          "C++": 27,
-          "Java": 25
+          "Python": 148,
+          "Java": 128,
+          "C#": 62,
+          "JavaScript": 58,
+          "C++": 35,
+          "C": 27,
+          "Go": 25,
+          "PHP": 18
         },
         "generator_counts": {
-          "Human": 77,
-          "Qwen/Qwen2.5-Coder-1.5B": 4,
-          "meta-llama/CodeLlama-7b": 4,
-          "mistralai/Codestral-22B": 3,
-          "gpt-4.1-mini": 3,
-          "deepseek-ai/deepseek-coder-1.3b": 2,
-          "mistralai/Mistral-7B": 2,
-          "deepseek-ai/deepseek-coder-6.7b": 2,
-          "bigcode/starcoder2-7b": 2,
-          "gpt-4o-mini": 1,
-          "meta-llama/CodeLlama-13b": 1
+          "Human": 200,
+          "GPT-4o": 60,
+          "meta-llama/Llama-3.1-8B-Instruct": 21,
+          "ibm-granite/granite-3.3-8b-instruct": 19,
+          "Qwen/Qwen2.5-Coder-1.5B-Instruct": 19,
+          "ibm-granite/granite-3.2-2b-instruct": 18,
+          "deepseek-ai/DeepSeek-V3-0324": 17,
+          "01-ai/Yi-Coder-1.5B-Chat": 16,
+          "microsoft/Phi-3-small-8k-instruct": 14,
+          "mistralai/Devstral-Small-2505": 13,
+          "mistralai/Mistral-7B-Instruct-v0.3": 13,
+          "Qwen/Qwen2.5-72B-Instruct": 10,
+          "microsoft/Phi-3-mini-4k-instruct": 9,
+          "microsoft/Phi-3-medium-4k-instruct": 9,
+          "meta-llama/Llama-3.2-3B": 8,
+          "ibm-granite/granite-3.3-8b-base": 8,
+          "gemma-3-27b-it": 7,
+          "Qwen/Qwen2.5-Codder-14B-Instruct": 7,
+          "bigcode/starcoder": 7,
+          "deepseek-ai/deepseek-coder-1.3b-base": 5,
+          "meta-llama/Llama-3.2-1B": 5,
+          "Qwen/QwQ-32B": 5,
+          "meta-llama/Llama-3.2-11B-Vision-Instruct": 5,
+          "gemma-3n-e4b-it": 2,
+          "google/codegemma-2b": 2,
+          "deepseek-ai/DeepSeek-R1": 1,
+          "01-ai/Yi-Coder-1.5B": 1
         },
         "family_counts": {
-          "human": 77,
-          "mistral": 5,
-          "meta-llama": 5,
-          "qwen": 4,
-          "openai": 4,
-          "deepseek": 4,
-          "bigcode": 2
+          "human": 200,
+          "openai": 60,
+          "ibm-granite": 45,
+          "qwen": 41,
+          "meta-llama": 39,
+          "phi": 32,
+          "mistral": 26,
+          "deepseek": 23,
+          "01-ai": 17,
+          "gemma": 11,
+          "bigcode": 7
         },
         "domain_counts": {
-          "algorithmic": 101
+          "unknown": 501
         }
       },
       "id_val": {
         "name": "id_val",
-        "rows": 40,
+        "rows": 300,
         "label_counts": {
-          "1": 21,
-          "0": 19
+          "0": 264,
+          "10": 7,
+          "7": 5,
+          "2": 5,
+          "8": 5,
+          "6": 4,
+          "9": 3,
+          "1": 3,
+          "3": 2,
+          "5": 1,
+          "4": 1
         },
         "language_counts": {
-          "C++": 14,
-          "Python": 13,
-          "Java": 13
+          "Python": 79,
+          "Java": 73,
+          "C#": 47,
+          "C": 28,
+          "JavaScript": 21,
+          "C++": 20,
+          "PHP": 17,
+          "Go": 15
         },
         "generator_counts": {
-          "Human": 19,
-          "meta-llama/CodeLlama-13b": 3,
-          "bigcode/starcoder2-7b": 3,
-          "gpt-4.1-mini": 3,
-          "deepseek-ai/deepseek-coder-6.7b": 3,
-          "Qwen/Qwen2.5-Coder-1.5B": 3,
-          "mistralai/Mistral-7B": 2,
-          "gpt-4o-mini": 2,
-          "meta-llama/CodeLlama-7b": 1,
-          "mistralai/Codestral-22B": 1
+          "Human": 264,
+          "GPT-4o": 7,
+          "meta-llama/Llama-3.1-8B-Instruct": 3,
+          "ibm-granite/granite-3.2-2b-instruct": 3,
+          "mistralai/Mistral-7B-Instruct-v0.3": 2,
+          "microsoft/Phi-3-mini-4k-instruct": 2,
+          "Qwen/Qwen2.5-Codder-14B-Instruct": 2,
+          "Qwen/Qwen2.5-72B-Instruct": 2,
+          "microsoft/Phi-3-small-8k-instruct": 2,
+          "meta-llama/Llama-3.2-3B": 1,
+          "ibm-granite/granite-3.3-8b-base": 1,
+          "deepseek-ai/DeepSeek-R1": 1,
+          "deepseek-ai/DeepSeek-V3-0324": 1,
+          "01-ai/Yi-Coder-1.5B": 1,
+          "Qwen/Qwen2.5-Coder-1.5B-Instruct": 1,
+          "google/codegemma-2b": 1,
+          "01-ai/Yi-Coder-1.5B-Chat": 1,
+          "meta-llama/Llama-3.2-11B-Vision-Instruct": 1,
+          "mistralai/Devstral-Small-2505": 1,
+          "ibm-granite/granite-3.3-8b-instruct": 1,
+          "deepseek-ai/deepseek-coder-1.3b-base": 1,
+          "bigcode/starcoder": 1
         },
         "family_counts": {
-          "human": 19,
-          "openai": 5,
-          "meta-llama": 4,
+          "human": 264,
+          "openai": 7,
+          "meta-llama": 5,
+          "qwen": 5,
+          "ibm-granite": 5,
+          "phi": 4,
           "mistral": 3,
-          "qwen": 3,
           "deepseek": 3,
-          "bigcode": 3
+          "01-ai": 2,
+          "gemma": 1,
+          "bigcode": 1
         },
         "domain_counts": {
-          "algorithmic": 40
+          "unknown": 300
         }
       },
       "ood_gen": {
         "name": "ood_gen",
-        "rows": 40,
+        "rows": 300,
         "label_counts": {
-          "0": 21,
-          "1": 19
+          "0": 277,
+          "2": 10,
+          "7": 7,
+          "4": 6
         },
         "language_counts": {
-          "C++": 14,
-          "Python": 13,
-          "Java": 13
+          "Python": 96,
+          "Java": 82,
+          "C#": 31,
+          "JavaScript": 22,
+          "C++": 21,
+          "Go": 21,
+          "C": 15,
+          "PHP": 12
         },
         "generator_counts": {
-          "Human": 21,
-          "bigcode/starcoder2-3b": 19
+          "Human": 277,
+          "Qwen/Qwen2.5-Coder-1.5B": 10,
+          "meta-llama/Llama-3.1-8B": 7,
+          "bigcode/starcoder2-15b": 6
         },
         "family_counts": {
-          "human": 21,
-          "bigcode": 19
+          "human": 277,
+          "qwen": 10,
+          "meta-llama": 7,
+          "bigcode": 6
         },
         "domain_counts": {
-          "algorithmic": 40
+          "unknown": 300
+        }
+      },
+      "official_val": {
+        "name": "official_val",
+        "rows": 299,
+        "label_counts": {
+          "0": 265,
+          "10": 6,
+          "7": 5,
+          "8": 5,
+          "2": 5,
+          "1": 3,
+          "6": 3,
+          "9": 3,
+          "3": 2,
+          "5": 1,
+          "4": 1
+        },
+        "language_counts": {
+          "Java": 88,
+          "Python": 77,
+          "C#": 41,
+          "C": 23,
+          "C++": 21,
+          "JavaScript": 20,
+          "PHP": 16,
+          "Go": 13
+        },
+        "generator_counts": {
+          "Human": 265,
+          "GPT-4o": 6,
+          "meta-llama/Llama-3.1-8B-Instruct": 3,
+          "microsoft/Phi-3-mini-4k-instruct": 2,
+          "deepseek-ai/DeepSeek-V3-0324": 2,
+          "mistralai/Mistral-7B-Instruct-v0.3": 2,
+          "Qwen/Qwen2.5-Coder-1.5B": 2,
+          "ibm-granite/granite-3.2-2b-instruct": 2,
+          "ibm-granite/granite-3.3-8b-instruct": 2,
+          "Qwen/Qwen2.5-Coder-1.5B-Instruct": 2,
+          "mistralai/Devstral-Small-2505": 1,
+          "bigcode/starcoder2-15b": 1,
+          "gemma-3n-e4b-it": 1,
+          "Qwen/Qwen2.5-Codder-14B-Instruct": 1,
+          "ibm-granite/granite-3.3-8b-base": 1,
+          "microsoft/Phi-3-small-8k-instruct": 1,
+          "deepseek-ai/deepseek-coder-1.3b-base": 1,
+          "meta-llama/Llama-3.2-3B": 1,
+          "01-ai/Yi-Coder-1.5B-Chat": 1,
+          "meta-llama/Llama-3.1-8B": 1,
+          "01-ai/Yi-Coder-1.5B": 1
+        },
+        "family_counts": {
+          "human": 265,
+          "openai": 6,
+          "meta-llama": 5,
+          "ibm-granite": 5,
+          "qwen": 5,
+          "deepseek": 3,
+          "phi": 3,
+          "mistral": 3,
+          "01-ai": 2,
+          "gemma": 1,
+          "bigcode": 1
+        },
+        "domain_counts": {
+          "unknown": 299
         }
       }
     }

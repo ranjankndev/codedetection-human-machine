@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from codedet.report import GENERATED_BEGIN, GENERATED_END, render_results_block
+from codedet.evaluation.report import GENERATED_BEGIN, GENERATED_END, render_results_block
 
 REPO = Path(__file__).resolve().parents[1]
 RESULTS = REPO / "results"
@@ -32,7 +32,7 @@ def expected() -> str:
     summary = _load("summary.json")
     if not summary.get("tasks"):
         pytest.skip("no results/summary.json in this checkout; run scripts/run_all.py first")
-    return render_results_block(summary, _load("analysis.json"), _load("bench.json"))
+    return render_results_block(summary, _load("analysis.json"), _load("bench.json"), _load("status.json"))
 
 
 def test_readme_generated_block_matches_results(expected):
@@ -47,12 +47,12 @@ def test_readme_generated_block_matches_results(expected):
 
 
 def test_summary_md_matches_results(expected):
-    f = RESULTS / "summary.md"
+    f = RESULTS / "REPORT.md"
     if not f.exists():
-        pytest.skip("results/summary.md not generated yet")
+        pytest.skip("results/REPORT.md not generated yet")
     region = _generated_region(f.read_text(encoding="utf-8"))
     assert region is not None and region.strip() == expected.strip(), (
-        "results/summary.md is stale - run `python scripts/make_report.py`")
+        "results/REPORT.md is stale - run `python scripts/make_report.py`")
 
 
 def test_every_reported_split_has_identical_rows_across_models():

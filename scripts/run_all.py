@@ -23,7 +23,7 @@ from pathlib import Path
 
 from codedet.config import Config, RunPaths
 from codedet.utils import get_logger, write_json
-from codedet.zoo import is_neural
+from codedet.models.zoo import is_neural
 
 log = get_logger("run_all")
 SCRIPTS = Path(__file__).resolve().parent
@@ -41,16 +41,21 @@ class Stage:
     result: dict = field(default_factory=dict)
 
 
+def docs_dir(out: str) -> Path:
+    """Only the canonical run (`--out results`) may write into docs/; dry runs keep everything in <out>."""
+    return REPO / "docs" if Path(out).resolve() == (REPO / "results").resolve() else Path(out)
+
+
 def build_stages(cfg: Config, a) -> list[Stage]:
     common = ["--config", a.config_path, "--out", a.out]
     cpu = ["--cpu-only"] if a.cpu_only else []
     optional = set(cfg.optional_stages())
     stages = [
-        Stage("discover", ["discover_data.py", "--data", a.data, "--out", a.out], required=False),
-        Stage("splits", ["build_splits.py", "--task", "both", "--data", a.data, *common]),
-        Stage("lm_features", ["extract_lm_features.py", "--task", "both", *common, *cpu],
+        Stage("discover", ["stages/discover_data.py", "--data", a.data, "--out", a.out], required=False),
+        Stage("splits", ["stages/build_splits.py", "--task", "both", "--data", a.data, *common]),
+        Stage("lm_features", ["stages/extract_lm_features.py", "--task", "both", *common, *cpu],
               required="lm" not in optional, max_minutes=float(cfg.get("stage_caps.lm_features", 45))),
-        Stage("classical", ["run_classical.py", "--task", "both", *common],
+        Stage("classical", ["stages/run_classical.py", "--task", "both", *common],
               max_minutes=float(cfg.get("stage_caps.classical", 40))),
     ]
     for task in ("A", "B"):
@@ -59,20 +64,20 @@ def build_stages(cfg: Config, a) -> list[Stage]:
                 continue
             stages.append(Stage(
                 f"train_{task}_{model}",
-                ["train.py", "--task", task, "--model", model, *common, *cpu],
+                ["stages/train.py", "--task", task, "--model", model, *common, *cpu],
                 required=model not in optional and model != "lora",
                 retry_cheaper=True, max_minutes=float(cfg.get("stage_caps.train", 90))))
     if "stack" in set(cfg.models("A")) | set(cfg.models("B")):
-        stages.append(Stage("stack", ["run_stack.py", "--task", "both", *common],
+        stages.append(Stage("stack", ["stages/run_stack.py", "--task", "both", *common],
                             required="stack" not in optional))
     stages += [
-        Stage("evaluate", ["evaluate.py", *common]),
-        Stage("analyze", ["analyze.py", *common]),
-        Stage("bench", ["bench.py", *common], required="bench" not in optional),
+        Stage("evaluate", ["stages/evaluate.py", *common]),
+        Stage("analyze", ["stages/analyze.py", *common]),
+        Stage("bench", ["stages/bench.py", *common], required="bench" not in optional),
         Stage("report", ["make_report.py", "--out", a.out, "--readme", a.readme]),
         # the deck is packaging, not evidence: it is always optional and exits 0 without python-pptx
         Stage("slides", ["make_slides.py", "--out", a.out,
-                         "--deck", str(REPO / "docs" / "codedet_slides.pptx")], required=False),
+                         "--deck", str(docs_dir(a.out) / "codedet_slides.pptx")], required=False),
     ]
     return stages
 
@@ -209,7 +214,7 @@ def main() -> int:
         gaps += ["Every stage of this run completed; nothing was skipped or degraded."]
     gaps += ["", end]
     block = "\n".join(gaps)
-    gaps_file = REPO / "KNOWN_GAPS.md"
+    gaps_file = docs_dir(a.out) / "KNOWN_GAPS.md"
     prev = gaps_file.read_text(encoding="utf-8") if gaps_file.exists() else ""
     if begin in prev and end in prev:
         text = prev.split(begin)[0] + block + prev.split(end, 1)[1]

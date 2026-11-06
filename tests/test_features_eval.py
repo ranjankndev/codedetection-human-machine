@@ -1,9 +1,9 @@
 import numpy as np
 import pytest
-from codedet.features import stylometric_features, style_matrix, StyleScaler, STYLE_DIM
-from codedet.eval import (macro_f1_fast, bootstrap_ci, paired_bootstrap_diff, mcnemar, ece, fit_temperature,
+from codedet.features.style import stylometric_features, style_matrix, StyleScaler, STYLE_DIM
+from codedet.evaluation.metrics import (macro_f1_fast, bootstrap_ci, paired_bootstrap_diff, mcnemar, ece, fit_temperature,
                           softmax, metrics_dict)
-from codedet.fixtures import make_fixture
+from codedet.data.fixtures import make_fixture
 
 
 def test_style():

@@ -1,8 +1,8 @@
 import numpy as np
-from codedet.labels import normalize_family, mark_seen, binary_labels
-from codedet.data import (stratified_subsample, cap_human_share, dedup_exact, holdout_language_split,
+from codedet.data.labels import normalize_family, mark_seen, binary_labels
+from codedet.data.loading import (stratified_subsample, cap_human_share, dedup_exact, holdout_language_split,
                           holdout_generator_split, head_tail_ids)
-from codedet.fixtures import make_fixture
+from codedet.data.fixtures import make_fixture
 
 
 def test_normalize_family():

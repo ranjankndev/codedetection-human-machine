@@ -40,7 +40,7 @@ Read that bias line carefully, because the original write-up got it wrong:
 - The bias is added **pre-softmax, per key, broadcast over queries** — the same shape of intervention as
   ALiBi or a relative-position bias, except content-driven rather than positional.
 
-Ablation flags (all one line in `codedet/zoo.py`):
+Ablation flags (all one line in `codedet/models/zoo.py`):
 
 | name | `num_gpad_layers` | `entropy_alpha` | `use_style` | what it isolates |
 |---|---|---|---|---|
@@ -71,7 +71,7 @@ flowchart TD
     ST --> PR
     PR --> EV["evaluate<br/>CIs, paired tests, ECE, slices"]
     EV --> AN["analyze<br/>shortcut, imbalance, calibration, threshold, errors"]
-    AN --> RP["make_report<br/>summary.md + README block"]
+    AN --> RP["make_report<br/>REPORT.md, APPENDIX.md + README block"]
     BE["bench"] --> RP
 ```
 
@@ -81,7 +81,7 @@ Three properties this layout buys:
    the identical rows" is asserted in `summary.json` (`identical_rows`) rather than hoped for.
 2. **Any stage can fail without taking the run with it.** `run_all.py` runs each stage as a subprocess
    with its own time cap, records the outcome in `status.json`, retries training once in a cheaper
-   configuration, and writes `KNOWN_GAPS.md` for whatever did not happen.
+   configuration, and writes `docs/KNOWN_GAPS.md` for whatever did not happen.
 3. **Re-running is cheap.** A finished stage drops a marker in `<out>/.done/`; re-running skips it unless
    `--force`. That is what makes a Kaggle session that dies at minute 40 recoverable.
 
@@ -90,8 +90,8 @@ Three properties this layout buys:
 | Audit finding | Fix | File |
 |---|---|---|
 | "Entropy" meant three different things | Mechanism renamed and documented; true predictive entropy is a separate module | `models/gpad.py`, `lm_features.py` |
-| No capacity control | `control` variant, and the README branch is chosen from its paired CI | `zoo.py`, `scripts/evaluate.py` |
-| Tables compared different row counts | Materialised splits + `row_id` alignment + `identical_rows` assertion | `splits.py`, `artifacts.py`, `scripts/evaluate.py` |
+| No capacity control | `control` variant, and the README branch is chosen from its paired CI | `zoo.py`, `scripts/stages/evaluate.py` |
+| Tables compared different row counts | Materialised splits + `row_id` alignment + `identical_rows` assertion | `splits.py`, `artifacts.py`, `scripts/stages/evaluate.py` |
 | Majority-class illusion on Task B | Train-only human cap, composition-targeted sampling, class-aware losses, macro-F1 | `splits.py`, `losses.py` |
 | Unanalysed OOD collapse | Held-out language/generator splits, length-only probe, comment/whitespace stress test | `splits.py`, `classical.py`, `perturb.py` |
 | Stylometry was Python-only (a language detector) | Language-agnostic features; `radon` kept only as a labelled legacy ablation | `features.py` |

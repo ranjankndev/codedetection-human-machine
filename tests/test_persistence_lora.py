@@ -1,6 +1,6 @@
 """Checkpoint round-trip and the LoRA variant.
 
-Both paths were previously untested (`docs/OLD_CODE_AUDIT.md` flags the reload path): the demo loads a
+Both paths were previously untested (`docs/dev/OLD_CODE_AUDIT.md` flags the reload path): the demo loads a
 checkpoint with `GPADClassifier.load`, and the PEFT comparison is a README row. Neither downloads
 anything here - the tiny random encoder is saved and rebuilt from its own config.
 """
@@ -11,7 +11,7 @@ import json
 import pytest
 
 from codedet.config import Config
-from codedet.features import STYLE_DIM
+from codedet.features.style import STYLE_DIM
 from codedet.models.gpad import GPADClassifier, GPADConfig, count_params
 from codedet.models.lora import LoRALinear, build_lora_classifier
 

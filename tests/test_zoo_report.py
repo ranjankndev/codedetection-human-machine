@@ -6,11 +6,11 @@ import numpy as np
 import pytest
 
 from codedet.config import Config
-from codedet.features import STYLE_DIM
-from codedet.lm_features import LM_DIM
-from codedet.report import (GENERATED_BEGIN, GENERATED_END, fmt_ci, render_results_block, splice_generated,
+from codedet.features.style import STYLE_DIM
+from codedet.features.lm import LM_DIM
+from codedet.evaluation.report import (GENERATED_BEGIN, GENERATED_END, fmt_ci, render_results_block, splice_generated,
                             verdict_lines)
-from codedet.zoo import build, gpad_config, loss_kind, uses_style
+from codedet.models.zoo import build, gpad_config, loss_kind, uses_style
 
 torch = pytest.importorskip("torch")
 
@@ -103,14 +103,14 @@ def test_fmt_ci_formats_point_and_interval():
 def test_generated_block_is_delimited_and_contains_the_table():
     block = render_results_block(_summary(), {"tasks": {}}, {})
     assert block.startswith(GENERATED_BEGIN) and block.rstrip().endswith(GENERATED_END)
-    assert "A6 GPAD" in block and "A7 capacity control" in block
+    assert "GPAD (entropy bias + style)" in block and "bias switched off (control)" in block
 
 
 def test_verdict_follows_the_confidence_interval_not_the_point_estimate():
     tie = " ".join(verdict_lines(_summary(-0.05, 0.05), {"tasks": {}}))
-    assert "does not survive its control" in tie
+    assert "adds nothing beyond its extra parameters" in tie
     win = " ".join(verdict_lines(_summary(0.02, 0.09), {"tasks": {}}))
-    assert "survives its control" in win
+    assert "survives its control" in win and "adds nothing" not in win
 
 
 def test_splice_replaces_only_the_generated_region():

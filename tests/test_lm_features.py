@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-from codedet.lm_features import lm_stats_from_logits, predictive_entropy, LM_DIM
+from codedet.features.lm import lm_stats_from_logits, predictive_entropy, LM_DIM
 
 
 def test_entropy_bounds():

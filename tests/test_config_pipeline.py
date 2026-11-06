@@ -12,9 +12,9 @@ from pathlib import Path
 
 import pytest
 
-from codedet.classical import CLASSICAL_MODELS
+from codedet.models.classical import CLASSICAL_MODELS
 from codedet.config import SPLITS, CONFIG_DIR, Config, RunPaths
-from codedet.zoo import NEURAL_MODELS, is_neural
+from codedet.models.zoo import NEURAL_MODELS, is_neural
 
 PRESETS = sorted(p.stem for p in CONFIG_DIR.glob("*.yaml"))
 EXTRA_STAGE_MODELS = {"stack"}        # produced by run_stack.py, not by the classical or neural stages

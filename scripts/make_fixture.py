@@ -2,7 +2,7 @@
 import argparse
 import os
 
-from codedet.fixtures import make_fixture
+from codedet.data.fixtures import make_fixture
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--n", type=int, default=240)

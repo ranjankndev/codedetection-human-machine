@@ -2,12 +2,12 @@ import numpy as np
 import pytest
 import torch
 from codedet.models.gpad import GPADClassifier, GPADConfig, count_params
-from codedet.datasets import CodeDataset, make_collate
-from codedet.features import style_matrix, StyleScaler, STYLE_DIM
-from codedet.fixtures import make_fixture
-from codedet.losses import make_loss
-from codedet.trainloop import fit, TrainConfig, predict_logits, run_with_oom_ladder
-from codedet.eval import macro_f1_fast
+from codedet.data.datasets import CodeDataset, make_collate
+from codedet.features.style import style_matrix, StyleScaler, STYLE_DIM
+from codedet.data.fixtures import make_fixture
+from codedet.models.losses import make_loss
+from codedet.models.trainloop import fit, TrainConfig, predict_logits, run_with_oom_ladder
+from codedet.evaluation.metrics import macro_f1_fast
 
 
 def _batch(B=3, S=12, V=100):

@@ -22,11 +22,8 @@ results/cache/
 results/logs/
 *.npz
 *.npy
-# the starter pack this repo was promoted from (kept on disk, not tracked)
-codedet-starter/
 !results/
 !fixtures/.gitkeep
 build/
 data/
-results_real/
 results_kaggle_*/

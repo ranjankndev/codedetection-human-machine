@@ -1,292 +1,138 @@
-# Detecting machine-generated code — and naming the model that wrote it
+# Detecting machine-generated code, and naming the model that wrote it
 
-**SemEval-2026 Task 13.** Task A: is this snippet human-written or machine-generated? Task B: which of
-10 LLM families generated it (11 classes, human included)?
+**SemEval-2026 Task 13.** Task A: is this snippet written by a human or a machine? Task B: which of
+10 LLM families wrote it (11 classes, human included)?
 
-This is a rebuild of a competition project I shipped earlier. The model idea is unchanged — CodeBERT
-plus one extra transformer block carrying an **attention-entropy bias**, fused with stylometric
-features ("GPAD"). What changed is the **evaluation**: the first version reported a 0.99 → 0.57 drop
-from in-distribution to unseen-language data, compared models on different numbers of rows, had no
-capacity control for the extra block, and reported single runs without confidence intervals. The rebuild
-keeps the idea and tests it properly, including the parts where the answer is "no".
+This rebuilds a competition project. The model idea is the same (CodeBERT plus one extra transformer
+block with an **attention-entropy bias**, fused with style features: "GPAD"). The **evaluation** is new:
+every model on the same rows, confidence intervals, a capacity control for the extra block, and test
+splits the model has never seen (a held-out language, held-out generators).
 
-Why that matters more than another point of F1: a code detector is a tool for accusing a person of
-cheating. The interesting questions are *when does it fail*, *how confident should it be*, and *what does
-it cost to be wrong* — not the leaderboard.
-
----
-
-## What this project demonstrates
-
-| Concept | Where it lives | One-line claim |
-|---|---|---|
-| Distribution shift / shortcut learning | held-out-language split, `length_only` probe, `codedet/perturb.py` stress test | A length-and-whitespace-only regression is the floor every neural number is measured against |
-| Ablation with a **capacity control** | `control` = same extra block, entropy bias off (`codedet/zoo.py`) | GPAD adds parameters *and* a mechanism; only the control separates them |
-| Statistical honesty | `codedet/eval.py` bootstrap CIs, paired bootstrap, McNemar | Overlapping intervals are reported as ties, even when the old slide said "best" |
-| Class imbalance | task B human cap (train only), weighted CE / focal / logit adjustment | Accuracy 0.64 with macro-F1 0.29 was a majority-class illusion |
-| Zero-shot LLM detection signals | `codedet/lm_features.py` | Real predictive entropy and NLL from a frozen code LM (DetectGPT / Binoculars family) |
-| Calibration | temperature scaling fitted on ID-val, ECE measured on OOD | Confidence calibrated in-distribution does not survive the shift |
-| Cost-sensitive thresholds | `scripts/analyze.py` | The operating point is chosen for a stated 5:1 false-accusation cost, not left at 0.5 |
-| PEFT | `codedet/models/lora.py` | LoRA on query/value vs full fine-tune: trainable params, time, F1 |
-| Leakage control | exact + MinHash dedup, stable `row_id`s | Train is deduplicated against every eval split before anything trains |
-| Reproducibility | one `run_all.py`, stage markers, `results/*.json` → report | Every number in this README is generated from JSON by `scripts/make_report.py` |
-
-## The mechanism, stated correctly
-
-The original write-up claimed the model up-weighted *high-entropy* tokens using token-level predictive
-entropy. The code did something else. What it actually computes (`codedet/models/gpad.py`):
-
-1. per key `k`, the entropy `H_k` of a **learned softmax over key self-similarity** (not a language
-   model's predictive distribution, and not over the vocabulary);
-2. a per-key additive bias on the pre-softmax attention scores:
-   `score_qk += sign · α · σ(mean(H) − H_k)`;
-3. with `sign = +1` this boosts **low**-entropy keys — the opposite of the original claim. `sign = −1`
-   is kept as a two-line ablation (`gpad_sign_neg`).
-
-That is an additive, content-driven attention bias (same family as ALiBi / relative-position biases).
-True predictive entropy *does* appear in this project, under its own name, in `lm_features.py`: per-token
-NLL and `H(p(·|x<t))` from a frozen Qwen2.5-Coder-0.5B, used as features for a GBDT (`lm_gbdt`) and
-optionally fused into GPAD.
-
-Diagrams, the full ablation table and a map from each audit finding to the file that fixes it:
-[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Intended use, slices and limitations:
-[`docs/MODEL_CARD.md`](docs/MODEL_CARD.md). What was *not* done:
-[`KNOWN_GAPS.md`](KNOWN_GAPS.md).
+A code detector is a tool for accusing someone of cheating, so the questions here are *when does it
+fail*, *how sure should it be*, and *what does a wrong call cost*.
 
 ## Results
 
+The current numbers come from a laptop-CPU run on the real data (`configs/local_real.yaml`, small
+samples, a small encoder). The full GPU run (`configs/lite.yaml`) has not been done yet.
+One-page report with figures: [`results/REPORT.md`](results/REPORT.md). Every table:
+[`results/APPENDIX.md`](results/APPENDIX.md).
+
 <!-- BEGIN GENERATED RESULTS - produced by scripts/make_report.py, do not edit by hand -->
 
-> **These numbers are a plumbing dry run, not results.** Preset `local_cpu` trains a 2-layer *randomly initialised* encoder on ~300 rows of synthetic fixture code. It exists to prove every stage runs and every artifact is produced. The portfolio numbers come from the `lite` preset on the official SemEval-2026 Task 13 data.
+*Preset `local_real`, transformer rows use `huggingface/CodeBERTa-small-v1`. Scores are macro-F1 with a 95% bootstrap interval (1000 resamples); every model is scored on the same rows. Generated from `results/*.json`.*
 
-*Preset `local_cpu`, seed 42, 100 bootstrap resamples. Every number below is read from `results/summary.json` / `results/analysis.json`.*
+### Key findings
 
-### Task A - human vs machine
+- **The entropy bias adds nothing beyond its extra parameters.** GPAD minus the same model with the bias switched off: +0.003 (in-distribution), +0.007 (official val set), +0.002 (unseen language). No interval rules out zero, so the honest reading is a tie. The original report credited the entropy mechanism for a gain this comparison cannot support.
+- **A length-and-whitespace shortcut is hard to beat.** Six content-free features score 0.903 in-distribution and 0.513 on the unseen language; the transformer (`gpad`) is +0.047 and -0.036 against that. Out of distribution it learned formatting, not authorship.
+- **Confidence does not survive the shift.** Calibration error (ECE) is 0.027 in-distribution but 0.337 on the unseen language, even after temperature scaling.
+- **The default threshold accuses too many humans.** On the unseen language, 0.5 flags 85% of human snippets as machine; a threshold chosen for a 5:1 cost brings that to 38%, still far from usable.
+- **Task B is an imbalance problem.** Always guessing the biggest class gives accuracy 0.880 but macro-F1 0.085; the best model here (`tfidf_lr`) reaches macro-F1 0.144. Accuracy alone would hide this.
 
-Rows per split: `ID val` n=40, `OOD: unseen language` n=40. Every model is scored on the identical rows.
+### Task A - human or machine?
 
-| model | ID val | OOD: unseen language | seeds | seed sd |
-|---|---|---|---|---|
-| A0b length/whitespace LR (shortcut probe) | 1.000 [1.000, 1.000] | 1.000 [1.000, 1.000] | 2 | 0.000 |
-| A3 stylometry + LM entropy/NLL + GBDT | 1.000 [1.000, 1.000] | 1.000 [1.000, 1.000] | 2 | 0.000 |
-| A8 stacking (logits + features) | 1.000 [1.000, 1.000] | 1.000 [1.000, 1.000] | 1 | - |
-| A2 stylometry + GBDT | 1.000 [1.000, 1.000] | 1.000 [1.000, 1.000] | 2 | 0.000 |
-| A1 char 3-5-gram TF-IDF + LR | 1.000 [1.000, 1.000] | 0.740 [0.611, 0.859] | 2 | 0.000 |
-| A4 CodeBERT fine-tune | 0.333 [0.245, 0.390] | 0.322 [0.245, 0.385] | 1 | 0.000 |
-| A7 capacity control (extra block, bias off) | 0.333 [0.245, 0.390] | 0.322 [0.245, 0.385] | 1 | 0.000 |
-| A6 GPAD (entropy bias + style) | 0.333 [0.245, 0.390] | 0.322 [0.245, 0.385] | 1 | 0.000 |
-| A6b GPAD, entropy sign flipped | 0.333 [0.245, 0.390] | 0.322 [0.245, 0.385] | 1 | 0.000 |
-| A5 CodeBERT + LoRA | 0.333 [0.245, 0.390] | 0.322 [0.245, 0.385] | 1 | 0.000 |
-| A0a majority class | 0.333 [0.245, 0.390] | 0.322 [0.245, 0.385] | 1 | 0.000 |
+Rows: in-distribution n=300, unseen language n=300.
 
-**Paired comparisons** (same rows, 95% bootstrap CI of the macro-F1 difference + McNemar):
-
-| comparison (macro-F1 diff) | split | n | diff [95% CI] | McNemar p | verdict |
-|---|---|---|---|---|---|
-| gpad - control | ID val | 40 | +0.000 [+0.000, +0.000] | 1 | tie |
-| gpad - control | OOD: unseen language | 40 | +0.000 [+0.000, +0.000] | 1 | tie |
-| gpad - codebert | ID val | 40 | +0.000 [+0.000, +0.000] | 1 | tie |
-| gpad - codebert | OOD: unseen language | 40 | +0.000 [+0.000, +0.000] | 1 | tie |
-| gpad_sign_neg - gpad | ID val | 40 | +0.000 [+0.000, +0.000] | 1 | tie |
-| gpad_sign_neg - gpad | OOD: unseen language | 40 | +0.000 [+0.000, +0.000] | 1 | tie |
-| lora - codebert | ID val | 40 | +0.000 [+0.000, +0.000] | 1 | tie |
-| lora - codebert | OOD: unseen language | 40 | +0.000 [+0.000, +0.000] | 1 | tie |
-| lm_gbdt - style_gbdt | ID val | 40 | +0.000 [+0.000, +0.000] | 1 | tie |
-| lm_gbdt - style_gbdt | OOD: unseen language | 40 | +0.000 [+0.000, +0.000] | 1 | tie |
-| tfidf_lr - length_only | ID val | 40 | +0.000 [+0.000, +0.000] | 1 | tie |
-| tfidf_lr - length_only | OOD: unseen language | 40 | -0.260 [-0.389, -0.141] | 0.00195 | **significant** |
-
-**Shortcut stress test**
-
-| model | OOD macro-F1 | no comments | drop | comments+format stripped | drop |
-|---|---|---|---|---|---|
-| A4 CodeBERT fine-tune | 0.322 | 0.322 | +0.000 | 0.322 | +0.000 |
-| A7 capacity control (extra block, bias off) | 0.322 | 0.322 | +0.000 | 0.322 | +0.000 |
-| A6 GPAD (entropy bias + style) | 0.322 | 0.322 | +0.000 | 0.322 | +0.000 |
-| A6b GPAD, entropy sign flipped | 0.322 | 0.322 | +0.000 | 0.322 | +0.000 |
-| A5 CodeBERT + LoRA | 0.322 | 0.322 | +0.000 | 0.322 | +0.000 |
-
-**Calibration**
-
-Temperature fitted on ID-val: **T = 9.94** (model `gpad`)
-
-| split | ECE raw | ECE after temperature |
+| model | in-distribution | unseen language |
 |---|---|---|
-| ID val | 0.140 | 0.014 |
-| OOD: unseen language | 0.163 | 0.039 |
+| Style features + gradient boosting | 0.957 [0.933, 0.977] | 0.754 [0.703, 0.798] |
+| Stacked ensemble | 0.963 [0.943, 0.983] | 0.747 [0.700, 0.793] |
+| Length + whitespace only (shortcut probe) | 0.903 [0.869, 0.936] | 0.513 [0.456, 0.569] |
+| CodeBERT fine-tune | 0.943 [0.917, 0.967] | 0.509 [0.452, 0.566] |
+| GPAD (entropy bias + style) | 0.950 [0.923, 0.973] | 0.477 [0.421, 0.531] |
+| GPAD with the bias switched off (control) | 0.947 [0.920, 0.970] | 0.475 [0.419, 0.527] |
+| Majority class (floor) | 0.344 [0.320, 0.367] | 0.344 [0.320, 0.368] |
+| Character n-grams + logistic regression | 0.840 [0.797, 0.877] | 0.341 [0.317, 0.364] |
 
-**Operating point**
+**Humans wrongly flagged as machine** (a false accusation costs 5x a miss; threshold picked on in-distribution data only, model `gpad`):
 
-Cost ratio: a false accusation (FP) is **5x** the cost of a miss. Threshold chosen on ID-val only, then applied unchanged to OOD.
+| threshold | value | in-distribution | unseen language |
+|---|---|---|---|
+| default (0.5) | 0.50 | 6.3% | 85.3% |
+| cost-aware | 0.90 | 3.5% | 37.8% |
 
-| split | rule | threshold | precision (machine) | recall (machine) | false-accusation rate | cost / 1000 snippets |
-|---|---|---|---|---|---|---|
-| ID val | argmax_0.5 | 0.50 | 0.000 | 0.000 | 0.000 | 500 |
-| ID val | cost_optimal | 0.49 | 0.000 | 0.000 | 0.000 | 500 |
-| OOD: unseen language | argmax_0.5 | 0.50 | 0.000 | 0.000 | 0.000 | 525 |
-| OOD: unseen language | cost_optimal | 0.49 | 0.000 | 0.000 | 0.000 | 525 |
+### Task B - which model family wrote it?
 
-**Per-class breakdown**
+Rows: in-distribution n=300, unseen generator n=300.
 
-Model `gpad`, split `id_val`:
-
-| class | precision | recall | F1 | support |
-|---|---|---|---|---|
-| human | 0.500 | 1.000 | 0.667 | 20 |
-| machine | 0.000 | 0.000 | 0.000 | 20 |
-
-**Feature importance**
-
-| feature | macro-F1 drop when shuffled (ID-val) |
-|---|---|
-| log_lines | +0.5400 |
-| mean_line_len | +0.0000 |
-| max_line_len | +0.0000 |
-| blank_ratio | +0.0000 |
-| mean_indent | +0.0000 |
-| tab_ratio | +0.0000 |
-| trailing_ws_ratio | +0.0000 |
-| comment_line_ratio | +0.0000 |
-| mean_ident_len | +0.0000 |
-| unique_ident_ratio | +0.0000 |
-
-### Task B - which LLM family
-
-Rows per split: `ID val` n=40, `OOD: unseen generator` n=40. Every model is scored on the identical rows.
-
-| model | ID val | OOD: unseen generator | seeds | seed sd |
-|---|---|---|---|---|
-| B5 GPAD (entropy + style) | 0.120 [0.060, 0.187] | 0.166 [0.127, 0.193] | 1 | 0.000 |
-| A8 stacking (logits + features) | 0.286 [0.194, 0.369] | 0.143 [0.143, 0.143] | 1 | - |
-| A1 char 3-5-gram TF-IDF + LR | 0.221 [0.161, 0.287] | 0.125 [0.110, 0.136] | 2 | 0.000 |
-| B2 CodeBERT + weighted CE | 0.092 [0.074, 0.110] | 0.098 [0.076, 0.115] | 1 | 0.000 |
-| B3 GPAD entropy-only | 0.092 [0.074, 0.110] | 0.098 [0.076, 0.115] | 1 | 0.000 |
-| A0a majority class | 0.092 [0.074, 0.110] | 0.098 [0.076, 0.115] | 1 | 0.000 |
-| B4 GPAD style-only | 0.058 [0.016, 0.096] | 0.000 [0.000, 0.000] | 1 | 0.000 |
-
-**Paired comparisons** (same rows, 95% bootstrap CI of the macro-F1 difference + McNemar):
-
-| comparison (macro-F1 diff) | split | n | diff [95% CI] | McNemar p | verdict |
-|---|---|---|---|---|---|
-| gpad_entropy_only - codebert_weighted | ID val | 40 | +0.000 [+0.000, +0.000] | 1 | tie |
-| gpad_entropy_only - codebert_weighted | OOD: unseen generator | 40 | +0.000 [+0.000, +0.000] | 1 | tie |
-| gpad_both - codebert_weighted | ID val | 40 | +0.028 [-0.038, +0.097] | 0.0127 | tie |
-| gpad_both - codebert_weighted | OOD: unseen generator | 40 | +0.067 [+0.029, +0.096] | 0.572 | **significant** |
-| tfidf_lr - majority | ID val | 40 | +0.129 [+0.063, +0.184] | 0.125 | **significant** |
-| tfidf_lr - majority | OOD: unseen generator | 40 | +0.027 [+0.016, +0.039] | 1 | **significant** |
-
-**Shortcut stress test**
-
-| model | OOD macro-F1 | no comments | drop | comments+format stripped | drop |
-|---|---|---|---|---|---|
-| B2 CodeBERT + weighted CE | 0.098 | 0.098 | +0.000 | 0.098 | +0.000 |
-| B5 GPAD (entropy + style) | 0.166 | 0.000 | +0.166 | 0.128 | +0.038 |
-| B3 GPAD entropy-only | 0.098 | 0.098 | +0.000 | 0.098 | +0.000 |
-| B4 GPAD style-only | 0.000 | 0.000 | +0.000 | 0.000 | +0.000 |
-
-**Calibration**
-
-Temperature fitted on ID-val: **T = 0.25** (model `gpad_both`)
-
-| split | ECE raw | ECE after temperature |
+| model | in-distribution | unseen generator |
 |---|---|---|
-| ID val | 0.041 | 0.064 |
-| OOD: unseen generator | 0.266 | 0.219 |
+| Character n-grams + logistic regression | 0.144 [0.091, 0.202] | 0.125 [0.088, 0.159] |
+| Majority class (floor) | 0.085 [0.083, 0.087] | 0.087 [0.086, 0.089] |
 
-**Per-class breakdown**
-
-Model `gpad_both`, split `id_val`:
-
-| class | precision | recall | F1 | support |
-|---|---|---|---|---|
-| human | 1.000 | 0.263 | 0.417 | 19 |
-| deepseek | 0.000 | 0.000 | 0.000 | 3 |
-| qwen | 0.000 | 0.000 | 0.000 | 3 |
-| bigcode | 0.167 | 0.667 | 0.267 | 3 |
-| meta-llama | 0.000 | 0.000 | 0.000 | 4 |
-| mistral | 0.100 | 0.333 | 0.154 | 3 |
-| openai | 0.000 | 0.000 | 0.000 | 5 |
-
-### Efficiency
-
-Sequence length 64 tokens, base model `hf-internal-testing/tiny-random-RobertaModel`; architectures built fresh (latency is weight-independent).
-
-| model | params total/trainable | device/precision | batch | p50 ms | p95 ms | snippets/s |
-|---|---|---|---|---|---|---|
-| A4 CodeBERT fine-tune | 0.1M / 0.1M | cpu/fp32 | 1 | 20.2 | 24.4 | 50 |
-| A4 CodeBERT fine-tune | 0.1M / 0.1M | cpu/fp32 | 8 | 23.5 | 47.5 | 340 |
-| A4 CodeBERT fine-tune | 0.1M / 0.1M | cpu/int8_dynamic | 1 | 67.8 | 98.8 | 15 |
-| A4 CodeBERT fine-tune | 0.1M / 0.1M | cpu/int8_dynamic | 8 | 127.2 | 189.0 | 63 |
-| A7 capacity control (extra block, bias off) | 0.1M / 0.1M | cpu/fp32 | 1 | 19.9 | 26.5 | 50 |
-| A7 capacity control (extra block, bias off) | 0.1M / 0.1M | cpu/fp32 | 8 | 28.8 | 44.7 | 278 |
-| A7 capacity control (extra block, bias off) | 0.1M / 0.1M | cpu/int8_dynamic | 1 | 69.5 | 106.0 | 14 |
-| A7 capacity control (extra block, bias off) | 0.1M / 0.1M | cpu/int8_dynamic | 8 | 101.3 | 167.8 | 79 |
-| A6 GPAD (entropy bias + style) | 0.1M / 0.1M | cpu/fp32 | 1 | 92.9 | 106.4 | 11 |
-| A6 GPAD (entropy bias + style) | 0.1M / 0.1M | cpu/fp32 | 8 | 33.5 | 55.9 | 239 |
-| A6 GPAD (entropy bias + style) | 0.1M / 0.1M | cpu/int8_dynamic | 1 | 566.4 | 581.7 | 2 |
-| A6 GPAD (entropy bias + style) | 0.1M / 0.1M | cpu/int8_dynamic | 8 | 191.4 | 256.5 | 42 |
-| A5 CodeBERT + LoRA | 0.1M / 0.0M | cpu/fp32 | 1 | 17.2 | 20.2 | 58 |
-| A5 CodeBERT + LoRA | 0.1M / 0.0M | cpu/fp32 | 8 | 24.4 | 67.9 | 327 |
-
-### What the numbers say
-
-- **The attention-entropy bias does not survive its control.** Against the parameter-matched control (same extra block, bias off), the macro-F1 difference is ID val: +0.000 [+0.000, +0.000], OOD: unseen language: +0.000 [+0.000, +0.000] - every interval contains zero, so the honest reading is *no gain beyond capacity*. The original report credited the entropy mechanism for a gain this comparison cannot support.
-- **Shortcut probe.** A logistic regression on nothing but length and whitespace reaches macro-F1 1.000 in-distribution and 1.000 on the held-out language. The transformer (`gpad`) differs from it by -0.667 in-distribution and -0.678 out of distribution. Out of distribution the fine-tuned encoder therefore buys **nothing** over six content-free features - whatever it learned in-distribution was formatting, not authorship.
-- **Stress test.** Stripping comments and normalising whitespace on the *same* OOD rows moves `codebert` by +0.000 macro-F1 (0.322 -> 0.322).
-- **Calibration breaks under shift.** After temperature scaling fitted on ID-val, ECE is 0.014 on ID val but 0.039 on OOD: unseen language: a confidence number calibrated in-distribution is not trustworthy off-distribution.
-- **Task B is an imbalance problem.** The majority-class baseline already scores accuracy 0.475 with macro-F1 0.092; the best model reaches macro-F1 0.286 (accuracy 0.600, `stack`). Reporting accuracy here would have hidden the whole problem - which is what the original run did.
-- **The old 'entropy-only is best' claim.** Re-tested against weighted CodeBERT on identical rows: no significant difference.
+Not in this run (training stage failed or was skipped): `codebert_weighted`, `gpad_entropy_only`.
 
 <!-- END GENERATED RESULTS -->
 
-## Reproduce
+## How GPAD works
+
+`src/codedet/models/gpad.py` adds one transformer block on top of the encoder. For each token it
+computes the entropy of a learned softmax over that token's similarity to the others, and adds
+`sign * alpha * sigmoid(mean(H) - H_k)` to the attention scores. With `sign = +1` this boosts
+**low**-entropy tokens, the opposite of what the original write-up claimed; `gpad_sign_neg` flips it.
+The `control` model is the same block with the bias switched off, so any GPAD gain can be split into
+"more parameters" vs. "the mechanism". Real predictive entropy from a code LM lives separately in
+`src/codedet/features/lm.py`. Diagrams and the full ablation list: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+
+## Run it
 
 ```bash
-pip install -e ".[dev]"            # torch/transformers come from the environment (Kaggle/Colab ship their own)
+pip install -e ".[dev,extra]"      # torch/transformers come from your environment
 pytest -q                          # CPU only, no downloads
 
-# 1. dry run on synthetic fixtures: proves every stage works, ~10 min on a laptop CPU
+# dry run on synthetic data (proves every stage works, ~10 min on a laptop)
 python scripts/make_fixture.py
-python scripts/run_all.py --preset local_cpu --cpu-only --data fixtures --out results
+python scripts/run_all.py --preset local_cpu --cpu-only --data fixtures --out /tmp/dry_run
 
-# 2. the real run on a free Kaggle GPU (needs a Kaggle token; ~5 min smoke, ~40 min lite)
-python scripts/kaggle_drive.py --preset smoke
-python scripts/kaggle_drive.py --preset lite
+# real data on a laptop CPU (parquet files in data/)
+python scripts/run_all.py --preset local_real --cpu-only --data data --out results
+
+# real data on a free GPU: see cloud/README.md (Kaggle or Colab)
 ```
 
-`run_all.py` owns the stage DAG (data → classical → LM features → neural → stacking → evaluation →
-analysis → benchmark → report), writes a marker per finished stage so a re-run resumes, degrades instead
-of crashing (CUDA OOM → smaller batch → gradient checkpointing → shorter sequences; missing package →
-skip the optional stage), and records everything in `results/status.json` and `KNOWN_GAPS.md`.
+`run_all.py` runs each stage in `scripts/stages/` as its own process, resumes from where it stopped,
+degrades instead of crashing (smaller batch, shorter sequences, skip optional stages), writes
+`results/status.json`, then rebuilds `results/REPORT.md`, `results/APPENDIX.md` and the block above.
+No number in this README is typed by hand; a test fails if it drifts from `results/*.json`.
 
-## Repo map
+## Repo layout
 
 ```
-src/codedet/        splits.py  classical.py  zoo.py  models/gpad.py  models/lora.py  lm_features.py
-                    features.py  perturb.py  losses.py  trainloop.py  eval.py  report.py  plots.py  bench.py
-scripts/            discover_data  build_splits  run_classical  extract_lm_features  train  run_stack
-                    evaluate  analyze  bench  make_report  run_all  kaggle_drive
-configs/            smoke.yaml  lite.yaml  local_cpu.yaml
-kaggle/             kaggle_entry.py (script kernel)        app/demo.py (Gradio)
-results/            committed: JSON metrics, summary.md, figures. Never: data, predictions, checkpoints
-tests/              CPU-only pytest: no downloads, tiny random encoder, synthetic fixtures
-legacy/             the original competition scripts, verbatim, for reference only
-docs/               MODEL_CARD.md  INTERVIEW_NOTES.md  OLD_CODE_AUDIT.md  design_doc.html
+src/codedet/
+  data/          load parquet, labels, train/val/OOD splits + dedup, perturbations, synthetic fixtures
+  features/      style features (style.py), code-LM entropy features (lm.py)
+  models/        GPAD, LoRA, the model registry (zoo.py), classical models, losses, training loop
+  evaluation/    metrics + bootstrap/McNemar, plots, report rendering, latency benchmark
+  config.py      presets and output paths
+scripts/
+  run_all.py     the one command: runs every stage below and the report
+  stages/        one script per pipeline stage (splits, classical, train, evaluate, analyze, ...)
+  make_report.py results/*.json -> REPORT.md, APPENDIX.md, README block
+  make_slides.py results/*.json -> docs/codedet_slides.pptx
+configs/         local_cpu (dry run), local_real (laptop, real data), smoke + lite (GPU)
+cloud/           Kaggle and Colab notebooks, Kaggle kernel driver
+app/demo.py      Gradio demo
+tests/           CPU-only pytest
+results/         REPORT.md, APPENDIX.md, JSON metrics, figures (data, predictions, checkpoints are not committed)
+docs/            ARCHITECTURE, MODEL_CARD, KNOWN_GAPS, INTERVIEW_NOTES; docs/dev/ holds build notes
 ```
+
+The original competition scripts are kept at git tag `legacy-code` (`git checkout legacy-code -- legacy/`).
 
 ## Limitations
 
-- Trained on the official SemEval-2026 Task 13 data only; no third-party AI-code detectors are used
-  (competition rule), so the baselines are the honest ones, not the strongest available.
-- The `lite` preset is a budget run (~20k rows, max_len 256, 1–2 epochs) sized for a free Kaggle GPU.
-  Numbers are not state of the art and are not meant to be; the point is the comparison design.
-- Proxy OOD splits (held-out language / held-out generator) stand in for the organisers' hidden test
-  sets. Where an official labeled validation file exists it is reported alongside, on identical rows.
-- A detector score is evidence, not proof. Section "Operating point" above reports the false-accusation
-  rate at the chosen threshold; please read it before using any such model on real students.
+- Official SemEval-2026 Task 13 data only; no third-party AI-code detectors (competition rule).
+- The CPU run uses 500 training rows and a 6-layer encoder; read its numbers as a comparison between
+  models, not as the best this approach can do. Two Task B models failed to train in that run.
+- The OOD splits (held-out language, held-out generator) stand in for the organisers' hidden test sets.
+- A detector score is evidence, not proof. Read the false-accusation numbers above before using any
+  such model on real people. What was not done: [`docs/KNOWN_GAPS.md`](docs/KNOWN_GAPS.md).
+  Intended use and slices: [`docs/MODEL_CARD.md`](docs/MODEL_CARD.md).
 
 ## Credits
 
-SemEval-2026 Task 13 organisers and the dataset (`daniilor/semeval-2026-task13`). Backbone:
-`microsoft/codebert-base`. LM features: `Qwen/Qwen2.5-Coder-0.5B`. The original competition-time results
-are preserved, clearly labeled, in `docs/ORIGINAL_RESULTS.md` — they are not re-validated here.
+SemEval-2026 Task 13 organisers and the dataset (`daniilor/semeval-2026-task13`). Encoders:
+`microsoft/codebert-base`, `huggingface/CodeBERTa-small-v1`. LM features: `Qwen/Qwen2.5-Coder-0.5B`.
+The original competition results are kept, clearly labeled and not re-validated, in
+[`docs/dev/ORIGINAL_RESULTS.md`](docs/dev/ORIGINAL_RESULTS.md).

@@ -16,17 +16,18 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from codedet.artifacts import probs_as_logits, save_preds
+from codedet.evaluation.artifacts import probs_as_logits, save_preds
 from codedet.config import RunPaths
-from codedet.fixtures import make_fixture
-from codedet.splits import prepare_frame
+from codedet.data.fixtures import make_fixture
+from codedet.data.splits import prepare_frame
 from codedet.utils import write_json
 
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
 
 
 def _load_cli(name: str):
-    spec = importlib.util.spec_from_file_location(f"{name}_cli", SCRIPTS / f"{name}.py")
+    path = SCRIPTS / "stages" / f"{name}.py"
+    spec = importlib.util.spec_from_file_location(f"{name}_cli", path if path.exists() else SCRIPTS / f"{name}.py")
     mod = importlib.util.module_from_spec(spec)
     sys.modules[f"{name}_cli"] = mod
     spec.loader.exec_module(mod)
@@ -143,6 +144,6 @@ def test_report_block_renders_from_the_generated_json(evaluated):
     _run_cli(mod, ["analyze.py", "--config", "local_cpu", "--out", str(run)])
     rep = _load_cli("make_report")
     assert _run_cli(rep, ["make_report.py", "--out", str(run), "--readme", str(run / "README.md")]) == 0
-    text = (run / "summary.md").read_text(encoding="utf-8")
-    assert "A7 capacity control" in text and "95% bootstrap CI" in text
+    text = (run / "APPENDIX.md").read_text(encoding="utf-8")
+    assert "bias switched off (control)" in text and "McNemar" in text
     assert "macro-F1" in text

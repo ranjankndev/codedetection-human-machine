@@ -6,9 +6,9 @@ import pandas as pd
 import pytest
 
 from codedet.config import Config, RunPaths
-from codedet.data import dedup_exact
-from codedet.fixtures import make_fixture
-from codedet.splits import build, pick_holdout_generators, prepare_frame, row_ids
+from codedet.data.loading import dedup_exact
+from codedet.data.fixtures import make_fixture
+from codedet.data.splits import build, pick_holdout_generators, prepare_frame, row_ids
 
 
 @pytest.fixture
